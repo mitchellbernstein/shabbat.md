@@ -10,6 +10,13 @@
   <meta property="og:url" content="https://shabbat.md" />
   <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- Prevent dark mode flash — must run before body renders -->
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -17,6 +24,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -31,12 +39,12 @@
   <style>
     html { scroll-behavior: smooth; }
 
-    /* Details/summary reset */
+    /* Details/summary reset (kept for any native usage) */
     details > summary { list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
     details > summary::marker { display: none; }
 
-    /* Ensure focus-visible rings don't appear on mouse click */
+    /* Focus rings */
     :focus:not(:focus-visible) { outline: none; box-shadow: none; }
     :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 2px; }
 
@@ -76,7 +84,7 @@
       top: -1px;
     }
 
-    /* Hebrew term tooltips */
+    /* Hebrew term tooltips — light mode */
     .heb {
       text-decoration-line: underline;
       text-decoration-style: dotted;
@@ -98,7 +106,6 @@
       font-size: 0.72rem;
       font-style: normal;
       line-height: 1.5;
-      white-space: nowrap;
       padding: 5px 10px;
       border-radius: 5px;
       pointer-events: none;
@@ -126,20 +133,90 @@
     }
 
     .heb:hover::after,
-    .heb:hover::before {
-      opacity: 1;
+    .heb:hover::before { opacity: 1; }
+
+    /* Dark mode: invert tooltip to light */
+    html.dark .heb::after {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    html.dark .heb::before {
+      border-top-color: #f1f5f9;
+    }
+
+    /* FAQ panel starts closed */
+    .faq-panel {
+      height: 0;
+      overflow: hidden;
     }
   </style>
 </head>
-<body class="bg-white text-gray-800 font-sans antialiased">
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans antialiased">
   <%= yield %>
-  <script>
+
+  <script type="module">
+    import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm"
+
+    // ── Dark mode toggle ──────────────────────────────────────────────
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark')
+      localStorage.theme = isDark ? 'dark' : 'light'
+    })
+
+    // ── Hero entrance animation ────────────────────────────────────────
+    animate(
+      '#hero-content',
+      { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0px)'] },
+      { duration: 0.6, easing: [0.25, 0.46, 0.45, 0.94], delay: 0.05 }
+    )
+
+    // ── Scroll-in animations for sections ─────────────────────────────
+    document.querySelectorAll('[data-animate]').forEach(el => {
+      el.style.opacity = '0'
+      el.style.transform = 'translateY(18px)'
+    })
+
+    inView('[data-animate]', (entry) => {
+      animate(
+        entry.target,
+        { opacity: [0, 1], transform: ['translateY(18px)', 'translateY(0px)'] },
+        { duration: 0.5, easing: [0.25, 0.46, 0.45, 0.94] }
+      )
+    }, { amount: 0.08 })
+
+    // ── FAQ accordion ─────────────────────────────────────────────────
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      const panel   = trigger.nextElementSibling
+      const chevron = trigger.querySelector('.faq-chevron')
+
+      trigger.addEventListener('click', () => {
+        const isOpen  = trigger.getAttribute('aria-expanded') === 'true'
+        const opening = !isOpen
+        trigger.setAttribute('aria-expanded', String(opening))
+
+        if (opening) {
+          // Measure natural height, animate from 0
+          panel.style.height = '0px'
+          const targetH = panel.scrollHeight
+          animate(panel,   { height: [`0px`, `${targetH}px`] }, { duration: 0.3, easing: [0.25, 0.46, 0.45, 0.94] })
+            .finished.then(() => { panel.style.height = 'auto' })
+          animate(chevron, { rotate: 180 }, { duration: 0.25, easing: [0.25, 0.46, 0.45, 0.94] })
+        } else {
+          // Snap to pixel height, then animate to 0
+          panel.style.height = panel.getBoundingClientRect().height + 'px'
+          animate(panel,   { height: '0px' }, { duration: 0.22, easing: [0.25, 0.46, 0.45, 0.94] })
+          animate(chevron, { rotate: 0 },     { duration: 0.22, easing: [0.25, 0.46, 0.45, 0.94] })
+        }
+      })
+    })
+
+    // ── Smooth anchor scroll ───────────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
-        e.preventDefault();
-        document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
-      });
-    });
+        e.preventDefault()
+        document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
   </script>
 </body>
 </html>
