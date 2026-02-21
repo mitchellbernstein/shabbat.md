@@ -44,13 +44,8 @@
     <h1 class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 mb-4">
       SHABBAT.md
     </h1>
-    <p class="text-gray-500 dark:text-gray-400 mb-2">Make Agents Kosher Again.</p>
-    <p class="text-gray-500 dark:text-gray-400 mb-3">
-      A repo config file that tells your AI agents when to stop for Shabbat and Yom Tov.
-      Drop it next to your <code class="font-mono text-gray-600 dark:text-gray-300">AGENTS.md</code> — it's a companion, not a replacement.
-    </p>
-    <p class="text-gray-500 dark:text-gray-400 mb-10">
-      Because your tools should rest when you do.
+    <p class="text-gray-500 dark:text-gray-400 mb-8">
+      Make Agents Kosher Again. A config file that pauses your AI agents for Shabbat. Companion to <code class="font-mono text-gray-600 dark:text-gray-300">AGENTS.md</code> — your tools rest when you do.
     </p>
     <div class="flex items-center justify-between bg-blue-600 rounded-lg px-5 py-3 w-full group">
       <pre class="font-mono text-sm text-white bg-transparent m-0 p-0 select-all" id="install-cmd">curl -fsSL shabbat.md/install | bash</pre>
@@ -69,6 +64,7 @@
     <script>
       var copyIcon = document.currentScript.previousElementSibling.querySelector('button').innerHTML;
     </script>
+    <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Interactive — asks three questions and writes a configured file.</p>
   </div>
 </section>
 
@@ -83,32 +79,12 @@
   <!-- Repo diagram -->
   <div class="code-block mb-8 text-sm">
     <pre>your-repo/
-├── <span class="key">AGENTS.md</span>     <span class="comment">← how to work  (project conventions, test commands)</span>
-├── <span class="val-str">SHABBAT.md</span>    <span class="comment">← when to stop (Shabbat window, permitted actions) ← you are here</span>
+├── AGENTS.md     <span class="comment">← how to work  (project conventions, test commands)</span>
+├── <span class="key">SHABBAT.md</span>    <span class="comment">← when to stop (Shabbat window, permitted actions)</span>
 ├── src/
 └── ...</pre>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm mb-8">
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-      <p class="font-mono font-medium text-blue-600 dark:text-blue-400 mb-1">AGENTS.md</p>
-      <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Project conventions, test commands, architecture. Tells agents <em>how</em> to work.</p>
-    </div>
-    <div class="p-4 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900">
-      <p class="font-mono font-medium text-blue-600 dark:text-blue-400 mb-1">SHABBAT.md</p>
-      <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Shabbat schedule and action scope. Tells agents <em>when</em> to stop.</p>
-    </div>
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-      <p class="font-mono font-medium text-gray-500 dark:text-gray-400 mb-1">A Skill</p>
-      <p class="text-gray-500 dark:text-gray-400 text-xs leading-relaxed">Teaches an agent a new capability. Not what this is.</p>
-    </div>
-  </div>
-
-  <div class="text-sm text-gray-500 dark:text-gray-400 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
-    <span class="font-medium text-gray-700 dark:text-gray-300">Bridging today's agents:</span>
-    Agents that don't yet natively support SHABBAT.md can be made aware by adding one line to your <code class="font-mono text-gray-700 dark:text-gray-300">AGENTS.md</code>:<br>
-    <code class="font-mono text-blue-600 dark:text-blue-400">"Read SHABBAT.md and honor its Shabbat compliance settings."</code>
-  </div>
 </section>
 
 <!-- ORIGIN -->
@@ -146,7 +122,7 @@
     </footer>
   </blockquote>
 
-  <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+  <p class="text-gray-500 dark:text-gray-400 text-sm">
     @levie's reply is a precise application of
     <em class="heb" data-def="/a-mee-RAH la-KOOM/ · instructing a non-Jew to perform labor on your behalf on Shabbat">amirah l'akum</em>
     and
@@ -208,8 +184,8 @@
   <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Key fields</h3>
   <dl class="space-y-4 text-sm">
     <div>
-      <dt class="font-mono text-gray-900 dark:text-gray-100">observance</dt>
-      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">
+      <dt class="font-mono text-gray-900 dark:text-gray-100 mb-1.5">observance</dt>
+      <dd class="text-gray-500 dark:text-gray-400">
         <code class="font-mono text-gray-700 dark:text-gray-300">strict</code> or <code class="font-mono text-gray-700 dark:text-gray-300">relaxed</code>. Sets intelligent defaults for the fields below — you can override any of them individually.
         <span class="block mt-1.5 text-xs text-gray-400 dark:text-gray-500">
           strict: candle-lighting → havdalah, communicate forbidden, Yom Tov observed.<br>
@@ -218,16 +194,16 @@
       </dd>
     </div>
     <div>
-      <dt class="font-mono text-gray-900 dark:text-gray-100">identity_type</dt>
-      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">The single most consequential field. <code class="font-mono text-gray-700 dark:text-gray-300">service-account</code> means the agent has its own credentials and identity. <code class="font-mono text-gray-700 dark:text-gray-300">user-proxy</code> means it acts as you — and is subject to the same restrictions.</dd>
+      <dt class="font-mono text-gray-900 dark:text-gray-100 mb-1.5">identity_type</dt>
+      <dd class="text-gray-500 dark:text-gray-400">The single most consequential field. <code class="font-mono text-gray-700 dark:text-gray-300">service-account</code> means the agent has its own credentials and identity. <code class="font-mono text-gray-700 dark:text-gray-300">user-proxy</code> means it acts as you — and is subject to the same restrictions.</dd>
     </div>
     <div>
-      <dt class="font-mono text-gray-900 dark:text-gray-100">pause_trigger / resume_trigger</dt>
-      <dd class="text-gray-500 dark:text-gray-400 mt-0.5"><code class="font-mono text-gray-700 dark:text-gray-300">shkia</code>, <code class="font-mono text-gray-700 dark:text-gray-300">candle-lighting</code>, <code class="font-mono text-gray-700 dark:text-gray-300">tzait</code>, <code class="font-mono text-gray-700 dark:text-gray-300">havdalah</code>, or an ISO 8601 time. Times are computed from accurate zmanim for the configured timezone.</dd>
+      <dt class="font-mono text-gray-900 dark:text-gray-100 mb-1.5">pause_trigger / resume_trigger</dt>
+      <dd class="text-gray-500 dark:text-gray-400"><code class="font-mono text-gray-700 dark:text-gray-300">shkia</code>, <code class="font-mono text-gray-700 dark:text-gray-300">candle-lighting</code>, <code class="font-mono text-gray-700 dark:text-gray-300">tzait</code>, <code class="font-mono text-gray-700 dark:text-gray-300">havdalah</code>, or an ISO 8601 time. Times are computed from accurate zmanim for the configured timezone.</dd>
     </div>
     <div>
-      <dt class="font-mono text-gray-900 dark:text-gray-100">life_safety_override</dt>
-      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">Set <code class="font-mono text-gray-700 dark:text-gray-300">true</code> for medical or emergency systems only. Pikuach nefesh overrides all of Shabbat by unanimous halachic consensus.</dd>
+      <dt class="font-mono text-gray-900 dark:text-gray-100 mb-1.5">life_safety_override</dt>
+      <dd class="text-gray-500 dark:text-gray-400">Set <code class="font-mono text-gray-700 dark:text-gray-300">true</code> for medical or emergency systems only. Pikuach nefesh overrides all of Shabbat by unanimous halachic consensus.</dd>
     </div>
   </dl>
 </section>
@@ -237,9 +213,9 @@
   <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">The Ruling</p>
   <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-3">The <span class="heb" data-def="/PSAK/ · a definitive halachic ruling; the verdict issued by a rabbinic authority">Psak</span></h2>
   <p class="text-gray-500 dark:text-gray-400 text-sm mb-10">
-    A Shabbat-aware agent reads your SHABBAT.md and issues one of three verdicts before the
-    <span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins, computed from the sun's position">shkia</span>
-    window begins. No surprises at sunset.
+    A Shabbat-aware agent reads your SHABBAT.md and issues one of three verdicts before your pause window begins —
+    <span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins, computed from the sun's position">shkia</span> for <code class="font-mono text-gray-600 dark:text-gray-400">relaxed</code>, candle-lighting for <code class="font-mono text-gray-600 dark:text-gray-400">strict</code>.
+    No surprises at sunset.
   </p>
 
   <div class="space-y-8 text-sm">
@@ -421,7 +397,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">No — they're siblings. <code class="font-mono text-gray-700 dark:text-gray-300">AGENTS.md</code> tells agents <em>how</em> to work on your project (conventions, test commands, architecture). <code class="font-mono text-gray-700 dark:text-gray-300">SHABBAT.md</code> tells agents <em>when</em> to stop (Shabbat window, permitted actions). Both files live at the repo root and do different jobs. Keep both.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">No — they're siblings. <code class="font-mono text-gray-700 dark:text-gray-300">AGENTS.md</code> tells agents <em>how</em> to work on your project (conventions, test commands, architecture). <code class="font-mono text-gray-700 dark:text-gray-300">SHABBAT.md</code> tells agents <em>when</em> to stop (Shabbat window, permitted actions). Both files live at the repo root and do different jobs. Keep both.</p>
       </div>
     </div>
 
@@ -431,7 +407,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Only if you want today's agents to respect it without native support. Add one line to your <code class="font-mono text-gray-700 dark:text-gray-300">AGENTS.md</code>: <code class="font-mono text-blue-600 dark:text-blue-400">"Read SHABBAT.md and honor its Shabbat compliance settings."</code> — that's the bridge until agents support the spec natively. If your agent already natively supports SHABBAT.md, you don't need to touch AGENTS.md at all.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">Only if you want today's agents to respect it without native support. Add one line to your <code class="font-mono text-gray-700 dark:text-gray-300">AGENTS.md</code>: <code class="font-mono text-blue-600 dark:text-blue-400">"Read SHABBAT.md and honor its Shabbat compliance settings."</code> — that's the bridge until agents support the spec natively. If your agent already natively supports SHABBAT.md, you don't need to touch AGENTS.md at all.</p>
       </div>
     </div>
 
@@ -441,7 +417,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">No. It is a configuration format and a framework for asking the right questions. It can identify the question; it cannot replace a qualified <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on matters of Jewish law">posek</span>. Novel edge cases — and AI agents are genuinely new territory — require a rabbi familiar with technology. This file tells you to consult one when you're in <span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area">SAFEK</span> territory.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">No. It is a configuration format and a framework for asking the right questions. It can identify the question; it cannot replace a qualified <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on matters of Jewish law">posek</span>. Novel edge cases — and AI agents are genuinely new territory — require a rabbi familiar with technology. This file tells you to consult one when you're in <span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area">SAFEK</span> territory.</p>
       </div>
     </div>
 
@@ -451,7 +427,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Set <code class="font-mono text-gray-700 dark:text-gray-300">life_safety_override: true</code>. <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat by unanimous halachic consensus. This field is intentionally not gated — emergencies don't wait for configuration reviews.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">Set <code class="font-mono text-gray-700 dark:text-gray-300">life_safety_override: true</code>. <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat by unanimous halachic consensus. This field is intentionally not gated — emergencies don't wait for configuration reviews.</p>
       </div>
     </div>
 
@@ -461,7 +437,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Set <code class="font-mono text-gray-700 dark:text-gray-300">observe_yom_tov: true</code>. The same framework applies. Some <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> are permitted on <span class="heb" data-def="/yom TOV/ · a Jewish holiday; literally 'good day'">Yom Tov</span> when directly serving human needs (<span class="heb" data-def="/o-CHEL NE-fesh/ · preparing food for a person; the category of labor permitted on Yom Tov">ochel nefesh</span>), but their compute equivalents are narrow. The format errs conservative unless you explicitly expand the permitted list.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">Set <code class="font-mono text-gray-700 dark:text-gray-300">observe_yom_tov: true</code>. The same framework applies. Some <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> are permitted on <span class="heb" data-def="/yom TOV/ · a Jewish holiday; literally 'good day'">Yom Tov</span> when directly serving human needs (<span class="heb" data-def="/o-CHEL NE-fesh/ · preparing food for a person; the category of labor permitted on Yom Tov">ochel nefesh</span>), but their compute equivalents are narrow. The format errs conservative unless you explicitly expand the permitted list.</p>
       </div>
     </div>
 
@@ -471,7 +447,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed"><span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins">Shkia</span> is halachic sunset — the technical start of Shabbat. Candle-lighting is typically 18 minutes earlier, a custom fence around the boundary. Conservative users may prefer candle-lighting. Both are computed from accurate <span class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</span> for your configured timezone.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400"><span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins">Shkia</span> is halachic sunset — the technical start of Shabbat. Candle-lighting is typically 18 minutes earlier, a traditional fence around the boundary. <code class="font-mono text-gray-600 dark:text-gray-400">strict</code> mode defaults to candle-lighting; <code class="font-mono text-gray-600 dark:text-gray-400">relaxed</code> mode defaults to shkia. You can override either independently. Both are computed from accurate <span class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</span> for your configured timezone.</p>
       </div>
     </div>
 
@@ -481,7 +457,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed"><span class="heb" data-def="/shvi-TAT ke-LIM/ · the requirement for one's tools to rest on Shabbat; a rabbinic extension of Shabbat law">Shvitat keilim</span> (your tools resting) is a rabbinic concern distinct from <span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">melachah</span>. An agent running on infrastructure you own but don't personally operate, under its own identity, is in <span class="heb" data-def="/sa-FEK/ · doubt; a halachic gray area requiring a ruling">SAFEK</span> territory. Most contemporary <span class="heb" data-def="/po-SKEEM/ · plural of posek; halachic decisors">poskim</span> are lenient on passive automation in owned systems started before Shabbat — but consult a rabbi.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400"><span class="heb" data-def="/shvi-TAT ke-LIM/ · the requirement for one's tools to rest on Shabbat; a rabbinic extension of Shabbat law">Shvitat keilim</span> (your tools resting) is a rabbinic concern distinct from <span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">melachah</span>. An agent running on infrastructure you own but don't personally operate, under its own identity, is in <span class="heb" data-def="/sa-FEK/ · doubt; a halachic gray area requiring a ruling">SAFEK</span> territory. Most contemporary <span class="heb" data-def="/po-SKEEM/ · plural of posek; halachic decisors">poskim</span> are lenient on passive automation in owned systems started before Shabbat — but consult a rabbi.</p>
       </div>
     </div>
 
@@ -491,7 +467,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Yes. The nearest file to the edited directory takes precedence. This mirrors how AGENTS.md works.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">Yes. The nearest file to the edited directory takes precedence. This mirrors how AGENTS.md works.</p>
       </div>
     </div>
 
@@ -501,7 +477,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="faq-panel">
-        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Only <code class="font-mono text-gray-700 dark:text-gray-300">identity_type</code> and <code class="font-mono text-gray-700 dark:text-gray-300">timezone</code>. Everything else has conservative defaults. SHABBAT.md is standard Markdown — no strict schema required.</p>
+        <p class="pb-4 text-gray-500 dark:text-gray-400">Only <code class="font-mono text-gray-700 dark:text-gray-300">identity_type</code> and <code class="font-mono text-gray-700 dark:text-gray-300">timezone</code>. Everything else has conservative defaults. SHABBAT.md is standard Markdown — no strict schema required.</p>
       </div>
     </div>
 
