@@ -792,19 +792,17 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         const opening = !isOpen
         trigger.setAttribute('aria-expanded', String(opening))
 
-        const easeInOut = [0.42, 0, 0.58, 1]
+        const spring = { type: 'spring', stiffness: 600, damping: 26 }
         if (opening) {
-          // Measure natural height, animate from 0
           panel.style.height = '0px'
           const targetH = panel.scrollHeight
-          animate(panel,   { height: [`0px`, `${targetH}px`] }, { duration: 0.35, easing: easeInOut })
+          animate(panel, { height: [`0px`, `${targetH}px`] }, spring)
             .finished.then(() => { panel.style.height = 'auto' })
-          animate(chevron, { rotate: 180 }, { duration: 0.3, easing: easeInOut })
+          animate(chevron, { rotate: 180 }, spring)
         } else {
-          // Snap to pixel height, then animate to 0
           panel.style.height = panel.getBoundingClientRect().height + 'px'
-          animate(panel,   { height: '0px' }, { duration: 0.3, easing: easeInOut })
-          animate(chevron, { rotate: 0 },     { duration: 0.3, easing: easeInOut })
+          animate(panel,   { height: '0px' }, spring)
+          animate(chevron, { rotate: 0 },     spring)
         }
       })
     })
