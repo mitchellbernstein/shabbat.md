@@ -172,10 +172,13 @@
 <span class="key">- identity_type:</span> <span class="val-str">service-account</span>   <span class="comment"># "service-account" | "user-proxy"</span>
 <span class="key">- credentials:</span>   <span class="val-str">dedicated</span>
 
+<span class="section">## Observance</span>
+<span class="key">- observance:</span> <span class="val-str">strict</span>   <span class="comment"># "strict" | "relaxed" — sets defaults for everything below</span>
+
 <span class="section">## Shabbat Schedule</span>
-<span class="key">- timezone:</span>       <span class="val-str">America/New_York</span>
-<span class="key">- pause_trigger:</span>  <span class="val-str">shkia</span>             <span class="comment"># or "candle-lighting" or ISO 8601</span>
-<span class="key">- resume_trigger:</span> <span class="val-str">havdalah</span>
+<span class="key">- timezone:</span>        <span class="val-str">America/New_York</span>
+<span class="key">- pause_trigger:</span>   <span class="val-str">candle-lighting</span>   <span class="comment"># strict: candle-lighting · relaxed: shkia</span>
+<span class="key">- resume_trigger:</span>  <span class="val-str">havdalah</span>           <span class="comment"># strict: havdalah      · relaxed: tzait</span>
 <span class="key">- observe_yom_tov:</span> <span class="val-bool">true</span>
 
 <span class="section">## Permitted Actions</span>
@@ -187,7 +190,7 @@
 <span class="key">- write</span>        <span class="comment"># disk, DB, external systems  (Kotev)</span>
 <span class="key">- deploy</span>       <span class="comment"># infra, releases             (Boneh)</span>
 <span class="key">- delete</span>       <span class="comment"># files, records              (Mochek)</span>
-<span class="key">- communicate</span>  <span class="comment"># email, Slack, SMS as user</span>
+<span class="key">- communicate</span>  <span class="comment"># email, Slack, SMS as user   (strict only)</span>
 <span class="key">- transact</span>     <span class="comment"># billing, payments           (Mekach u'memkar)</span>
 <span class="key">- commit</span>       <span class="comment"># git commits                 (Kotev)</span>
 
@@ -204,6 +207,16 @@
 
   <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Key fields</h3>
   <dl class="space-y-4 text-sm">
+    <div>
+      <dt class="font-mono text-gray-900 dark:text-gray-100">observance</dt>
+      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">
+        <code class="font-mono text-gray-700 dark:text-gray-300">strict</code> or <code class="font-mono text-gray-700 dark:text-gray-300">relaxed</code>. Sets intelligent defaults for the fields below — you can override any of them individually.
+        <span class="block mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+          strict: candle-lighting → havdalah, communicate forbidden, Yom Tov observed.<br>
+          relaxed: shkia → tzait, communicate permitted, lighter fence overall.
+        </span>
+      </dd>
+    </div>
     <div>
       <dt class="font-mono text-gray-900 dark:text-gray-100">identity_type</dt>
       <dd class="text-gray-500 dark:text-gray-400 mt-0.5">The single most consequential field. <code class="font-mono text-gray-700 dark:text-gray-300">service-account</code> means the agent has its own credentials and identity. <code class="font-mono text-gray-700 dark:text-gray-300">user-proxy</code> means it acts as you — and is subject to the same restrictions.</dd>
