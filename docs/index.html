@@ -870,7 +870,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
       const bottoms = [...document.querySelectorAll('.pb.bottom')]
       const caRoff  = document.getElementById('ca-r-off')
       const caBoff  = document.getElementById('ca-b-off')
-      const body    = document.body
+      const pbWrap  = document.querySelector('.pb-wrap')
 
       let lastY = window.scrollY, vel = 0, scale = 0, caScale = 0
       // track scroll direction for aberration axis
@@ -907,9 +907,9 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
           caBoff.setAttribute('dx',  shift)
           // apply/remove filter on body
           if (caScale > 0.05) {
-            body.style.filter = 'url(#ca)'
+            pbWrap.style.filter = 'url(#ca)'
           } else {
-            body.style.filter = ''
+            pbWrap.style.filter = ''
           }
         }
 
