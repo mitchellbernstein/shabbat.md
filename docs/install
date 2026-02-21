@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# Detect repo root, fall back to current directory
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 TARGET="$REPO_ROOT/SHABBAT.md"
 
 if [ -f "$TARGET" ]; then
+  echo ""
   echo "SHABBAT.md already exists at $TARGET"
   exit 0
 fi
@@ -19,37 +19,90 @@ if [ -z "$TIMEZONE" ]; then
   TIMEZONE="UTC"
 fi
 
+echo ""
+echo "  Setting up SHABBAT.md"
+echo "  ─────────────────────────────────────"
+echo ""
+
+# ── Question 1: Timezone ──────────────────────────────────────────────
+echo "  Timezone detected: $TIMEZONE"
+printf "  Is this correct? [Y/n] "
+read TZ_CONFIRM
+TZ_CONFIRM=${TZ_CONFIRM:-Y}
+if [[ "$TZ_CONFIRM" =~ ^[Nn] ]]; then
+  printf "  Enter timezone (e.g. America/New_York): "
+  read TIMEZONE
+fi
+
+echo ""
+
+# ── Question 2: Agent identity ────────────────────────────────────────
+echo "  Agent identity:"
+echo "    1) service-account  — agent has its own credentials (recommended)"
+echo "    2) user-proxy       — agent acts as you (stricter restrictions apply)"
+printf "  Choose [1/2, default 1]: "
+read IDENTITY_CHOICE
+IDENTITY_CHOICE=${IDENTITY_CHOICE:-1}
+if [ "$IDENTITY_CHOICE" = "2" ]; then
+  IDENTITY_TYPE="user-proxy"
+else
+  IDENTITY_TYPE="service-account"
+fi
+
+echo ""
+
+# ── Question 3: Observance level ──────────────────────────────────────
+echo "  Observance:"
+echo "    1) strict   — full restrictions, candle-lighting to havdalah, safest defaults"
+echo "    2) relaxed  — shkia to tzait, read/monitor/search permitted, lighter fence"
+printf "  Choose [1/2, default 1]: "
+read OBS_CHOICE
+OBS_CHOICE=${OBS_CHOICE:-1}
+
+if [ "$OBS_CHOICE" = "2" ]; then
+  OBSERVANCE="relaxed"
+  PAUSE_TRIGGER="shkia"
+  RESUME_TRIGGER="tzait"
+  YOM_TOV="false"
+  PERMITTED_BLOCK="- read\n- summarize\n- monitor\n- search\n- analyze"
+  FORBIDDEN_BLOCK="- write\n- deploy\n- delete\n- transact\n- commit"
+else
+  OBSERVANCE="strict"
+  PAUSE_TRIGGER="candle-lighting"
+  RESUME_TRIGGER="havdalah"
+  YOM_TOV="true"
+  PERMITTED_BLOCK="- read\n- summarize\n- monitor"
+  FORBIDDEN_BLOCK="- write\n- deploy\n- delete\n- communicate\n- transact\n- commit"
+fi
+
+# ── Write file ────────────────────────────────────────────────────────
 cat > "$TARGET" << EOF
 # SHABBAT.md
 
 ## Agent Identity
-- identity_type: service-account   # "service-account" | "user-proxy"
+- identity_type: $IDENTITY_TYPE
 - credentials: dedicated
+
+## Observance
+- observance: $OBSERVANCE   # "strict" | "relaxed"
 
 ## Shabbat Schedule
 - timezone: $TIMEZONE
-- pause_trigger: shkia             # "shkia" | "candle-lighting" | ISO 8601
-- resume_trigger: havdalah
-- observe_yom_tov: true
+- pause_trigger:  $PAUSE_TRIGGER
+- resume_trigger: $RESUME_TRIGGER
+- observe_yom_tov: $YOM_TOV
 
 ## Permitted Actions
-- read
-- summarize
-- monitor
+$(printf "$PERMITTED_BLOCK" | tr '\n' '\n')
 
 ## Forbidden Actions
-- write
-- deploy
-- delete
-- communicate
-- transact
-- commit
+$(printf "$FORBIDDEN_BLOCK" | tr '\n' '\n')
 
 ## Human-in-the-Loop
 - pause_hitl_on_shabbat: true
 
 ## Pikuach Nefesh
-- life_safety_override: false
+- life_safety_override: false   # true for medical/emergency systems only
 
 ## Havdalah Audit
 - audit_enabled: true
@@ -57,10 +110,10 @@ cat > "$TARGET" << EOF
 EOF
 
 echo ""
-echo "✓ Created SHABBAT.md at $TARGET"
+echo "  ✓ Created SHABBAT.md at $TARGET"
 echo ""
-echo "  Review identity_type and adjust permitted/forbidden"
-echo "  actions to match your agent's capabilities."
+echo "  Review and adjust permitted/forbidden actions to match your agent."
+echo "  For actual halachic decisions, consult a qualified rabbi."
 echo ""
 echo "  Shabbat Shalom."
 echo ""
