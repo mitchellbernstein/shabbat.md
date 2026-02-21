@@ -53,9 +53,11 @@
       line-height: 1.65;
     }
 
+    /* Light mode code block — GitHub light palette */
     .code-block {
-      background: #0f0f0f;
-      border-radius: 6px;
+      background: #f6f8fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
       overflow-x: auto;
     }
 
@@ -64,14 +66,27 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.8125rem;
       line-height: 1.75;
-      color: #d4d4d4;
+      color: #24292f;
     }
 
-    .comment  { color: #6b7280; }
-    .key      { color: #93c5fd; }
-    .val-str  { color: #86efac; }
-    .val-bool { color: #fda4af; }
-    .section  { color: #fbbf24; }
+    .comment  { color: #6e7781; }
+    .key      { color: #0550ae; }
+    .val-str  { color: #116329; }
+    .val-bool { color: #cf222e; }
+    .section  { color: #953800; }
+
+    /* Dark mode code block — GitHub dark palette */
+    html.dark .code-block {
+      background: #161b22;
+      border-color: #30363d;
+    }
+
+    html.dark .code-block pre { color: #e6edf3; }
+    html.dark .comment  { color: #8b949e; }
+    html.dark .key      { color: #79c0ff; }
+    html.dark .val-str  { color: #7ee787; }
+    html.dark .val-bool { color: #ff7b72; }
+    html.dark .section  { color: #e3b341; }
 
     .verdict-dot {
       display: inline-block;
