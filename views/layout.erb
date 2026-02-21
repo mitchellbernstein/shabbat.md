@@ -285,9 +285,9 @@
         const y   = window.scrollY
         const raw = Math.abs(y - lastY)
         lastY     = y
-        vel       = vel * 0.75 + raw * 0.25                 // smoothed velocity
+        vel       = vel * 0.6 + raw * 0.4                    // smoothed velocity
         const target = Math.min(vel / 12, 3)                // 0 at rest → 3 at speed
-        scale     = scale * 0.88 + target * 0.12            // ease toward target
+        scale     = scale * 0.72 + target * 0.28            // ease toward target
         const blurs = BASE.map(b => b * scale)
         setBlur(tops, blurs)
         setBlur(bottoms, blurs)
