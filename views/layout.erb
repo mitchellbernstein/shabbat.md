@@ -165,7 +165,7 @@
       overflow: hidden;
     }
 
-    /* Edge progressive blur — soft frosted edges */
+    /* Edge progressive blur — soft frosted edges, gradual transition */
     .edge-blur {
       position: fixed;
       inset: 0;
@@ -174,48 +174,72 @@
     }
     .edge-blur > div {
       position: absolute;
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
     }
     .edge-blur-top {
       top: 0;
       left: 0;
       right: 0;
-      height: 80px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%);
+      height: 120px;
+      background: linear-gradient(to bottom,
+        rgba(255,255,255,0.35) 0%,
+        rgba(255,255,255,0.12) 35%,
+        transparent 100%);
     }
     .edge-blur-bottom {
       bottom: 0;
       left: 0;
       right: 0;
-      height: 80px;
-      background: linear-gradient(to top, rgba(255,255,255,0.6) 0%, transparent 100%);
+      height: 120px;
+      background: linear-gradient(to top,
+        rgba(255,255,255,0.35) 0%,
+        rgba(255,255,255,0.12) 35%,
+        transparent 100%);
     }
     .edge-blur-left {
       top: 0;
       bottom: 0;
       left: 0;
-      width: 40px;
-      background: linear-gradient(to right, rgba(255,255,255,0.5) 0%, transparent 100%);
+      width: 60px;
+      background: linear-gradient(to right,
+        rgba(255,255,255,0.3) 0%,
+        rgba(255,255,255,0.08) 40%,
+        transparent 100%);
     }
     .edge-blur-right {
       top: 0;
       bottom: 0;
       right: 0;
-      width: 40px;
-      background: linear-gradient(to left, rgba(255,255,255,0.5) 0%, transparent 100%);
+      width: 60px;
+      background: linear-gradient(to left,
+        rgba(255,255,255,0.3) 0%,
+        rgba(255,255,255,0.08) 40%,
+        transparent 100%);
     }
     html.dark .edge-blur-top {
-      background: linear-gradient(to bottom, rgba(10,15,26,0.7) 0%, transparent 100%);
+      background: linear-gradient(to bottom,
+        rgba(10,15,26,0.5) 0%,
+        rgba(10,15,26,0.18) 35%,
+        transparent 100%);
     }
     html.dark .edge-blur-bottom {
-      background: linear-gradient(to top, rgba(10,15,26,0.7) 0%, transparent 100%);
+      background: linear-gradient(to top,
+        rgba(10,15,26,0.5) 0%,
+        rgba(10,15,26,0.18) 35%,
+        transparent 100%);
     }
     html.dark .edge-blur-left {
-      background: linear-gradient(to right, rgba(10,15,26,0.6) 0%, transparent 100%);
+      background: linear-gradient(to right,
+        rgba(10,15,26,0.45) 0%,
+        rgba(10,15,26,0.12) 40%,
+        transparent 100%);
     }
     html.dark .edge-blur-right {
-      background: linear-gradient(to left, rgba(10,15,26,0.6) 0%, transparent 100%);
+      background: linear-gradient(to left,
+        rgba(10,15,26,0.45) 0%,
+        rgba(10,15,26,0.12) 40%,
+        transparent 100%);
     }
   </style>
 </head>
