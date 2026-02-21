@@ -198,21 +198,6 @@
   </style>
 </head>
 <body class="bg-white dark:bg-[#0a0f1a] text-gray-800 dark:text-gray-200 font-sans antialiased">
-  <!-- Chromatic aberration SVG filter -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <filter id="ca" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
-        <feColorMatrix id="ca-r" in="SourceGraphic" type="matrix"
-          values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
-        <feColorMatrix id="ca-b" in="SourceGraphic" type="matrix"
-          values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="gb"/>
-        <feOffset id="ca-r-off" in="red" dx="0" dy="0" result="red-shifted"/>
-        <feOffset id="ca-b-off" in="gb" dx="0" dy="0" result="gb-shifted"/>
-        <feBlend in="red-shifted" in2="gb-shifted" mode="screen"/>
-      </filter>
-    </defs>
-  </svg>
-
   <div class="pb-wrap" aria-hidden="true">
     <div class="pb top l1"></div>
     <div class="pb top l2"></div>
@@ -285,13 +270,7 @@
       const BASE    = [2, 6, 14, 28]
       const tops    = [...document.querySelectorAll('.pb.top')]
       const bottoms = [...document.querySelectorAll('.pb.bottom')]
-      const caRoff  = document.getElementById('ca-r-off')
-      const caBoff  = document.getElementById('ca-b-off')
-      const pbWrap  = document.querySelector('.pb-wrap')
-
-      let lastY = window.scrollY, vel = 0, scale = 0, caScale = 0
-      // track scroll direction for aberration axis
-      let lastRaw = 0
+      let lastY = window.scrollY, vel = 0, scale = 0
 
       function setBlur(els, blurs) {
         els.forEach((el, i) => {
@@ -302,34 +281,14 @@
       }
 
       function tick() {
-        const y      = window.scrollY
-        const delta  = y - lastY
-        const raw    = Math.abs(delta)
-        lastY        = y
-
-        vel      = vel * 0.6 + raw * 0.4
+        const y   = window.scrollY
+        const raw = Math.abs(y - lastY)
+        lastY     = y
+        vel       = vel * 0.6 + raw * 0.4
         const target = Math.min(vel / 12, 3)
-        scale    = scale * 0.72 + target * 0.28
-
-        // Aberration: max 2px shift, same velocity basis
-        const caTarget = Math.min(vel / 18, 2)
-        caScale  = caScale * 0.72 + caTarget * 0.28
-
+        scale     = scale * 0.72 + target * 0.28
         setBlur(tops, BASE.map(b => b * scale))
         setBlur(bottoms, BASE.map(b => b * scale))
-
-        if (caRoff && caBoff) {
-          const shift = caScale.toFixed(2)
-          caRoff.setAttribute('dx', `-${shift}`)
-          caBoff.setAttribute('dx',  shift)
-          // apply/remove filter on body
-          if (caScale > 0.05) {
-            pbWrap.style.filter = 'url(#ca)'
-          } else {
-            pbWrap.style.filter = ''
-          }
-        }
-
         requestAnimationFrame(tick)
       }
       tick()
