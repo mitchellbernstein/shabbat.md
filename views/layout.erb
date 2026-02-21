@@ -271,7 +271,7 @@
       const tops    = [...document.querySelectorAll('.pb.top')]
       const bottoms = [...document.querySelectorAll('.pb.bottom')]
 
-      let lastY = window.scrollY, vel = 0, scale = 1
+      let lastY = window.scrollY, vel = 0, scale = 0
 
       function setBlur(els, blurs) {
         els.forEach((el, i) => {
@@ -286,7 +286,7 @@
         const raw = Math.abs(y - lastY)
         lastY     = y
         vel       = vel * 0.75 + raw * 0.25                 // smoothed velocity
-        const target = 1 + Math.min(vel / 20, 2.5)          // 1× at rest → 3.5× at speed
+        const target = Math.min(vel / 12, 3)                // 0 at rest → 3 at speed
         scale     = scale * 0.88 + target * 0.12            // ease toward target
         const blurs = BASE.map(b => b * scale)
         setBlur(tops, blurs)
