@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHABBAT.md — Make Agents Kosher Again</title>
+  <meta name="description" content="A simple, open format for declaring Shabbat and Yom Tov compliance settings for AI coding agents. Because your tools should rest when you do." />
+  <meta property="og:title" content="SHABBAT.md" />
+  <meta property="og:description" content="Make Agents Kosher Again. A simple, open format for Shabbat-compliant AI agent configuration." />
+  <meta property="og:url" content="https://shabbat.md" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            mutar: '#16a34a',
+            safek: '#ca8a04',
+            asur: '#dc2626',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .code-block {
+      background: #0f0f0f;
+      border: 1px solid #262626;
+      border-radius: 8px;
+    }
+
+    .code-block pre {
+      overflow-x: auto;
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: #e5e7eb;
+    }
+
+    .code-label {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #262626;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .comment { color: #6b7280; }
+    .key { color: #93c5fd; }
+    .value-string { color: #86efac; }
+    .value-bool { color: #fda4af; }
+    .value-keyword { color: #c4b5fd; }
+    .section { color: #fbbf24; }
+  </style>
+</head>
+<body class="bg-white text-gray-900 font-sans antialiased">
+  <%= yield %>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
