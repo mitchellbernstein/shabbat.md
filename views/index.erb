@@ -1,6 +1,16 @@
 <!-- NAV -->
 <header class="max-w-2xl mx-auto px-6 pt-8 pb-0 flex items-center justify-between">
-  <a href="#" class="font-mono text-sm font-medium text-blue-600 tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">SHABBAT.md</a>
+  <a href="#" class="flex items-center gap-2 font-mono text-sm font-medium text-blue-600 tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">
+    <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- stem -->
+      <rect x="7" y="0" width="4" height="5" rx="1" fill="currentColor"/>
+      <!-- body + pointed tip -->
+      <path d="M1 5H17V14L9 21L1 14Z" fill="currentColor"/>
+      <!-- <_ symbol in white -->
+      <text x="9" y="11.5" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="6" font-weight="600" fill="white" letter-spacing="-0.3">&lt;_</text>
+    </svg>
+    SHABBAT.md
+  </a>
   <nav aria-label="Main navigation" class="flex items-center gap-6 text-sm text-gray-500">
     <a href="#format"   class="hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Format</a>
     <a href="#psak"     class="hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Psak</a>
@@ -234,7 +244,7 @@
       ].each do |r| %>
       <tr>
         <td class="py-3 pr-8 text-gray-900">
-          <span class="heb" data-def="<%= r[:tip] %>"><%= r[:m] %></span> <span class="text-gray-400 text-xs">(<%= r[:sub] %>)</span>
+          <span class="heb" data-def="<%= r[:tip] %>"><%= r[:m] %></span> <span class="text-gray-500 text-xs">(<%= r[:sub] %>)</span>
         </td>
         <td class="py-3 pr-8 text-gray-500"><%= r[:compute] %></td>
         <td class="py-3 text-right font-mono text-xs <%= r[:vc] %>"><%= r[:v] %></td>
@@ -388,7 +398,7 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
 
 <!-- FOOTER -->
 <footer class="max-w-2xl mx-auto px-6 py-12 border-t border-gray-100">
-  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-gray-400">
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-gray-500">
     <span class="font-mono">SHABBAT.md</span>
     <div class="flex gap-5">
       <a href="https://github.com/mitchellbernstein/shabbat.md" target="_blank" rel="noopener" class="hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">GitHub</a>
