@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHABBAT.md — Make Agents Kosher Again</title>
+  <meta name="description" content="A simple, open format for declaring Shabbat and Yom Tov compliance settings for AI coding agents. Because your tools should rest when you do." />
+  <meta property="og:title" content="SHABBAT.md" />
+  <meta property="og:description" content="Make Agents Kosher Again. A simple, open format for Shabbat-compliant AI agent configuration." />
+  <meta property="og:url" content="https://shabbat.md" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Prevent dark mode flash — must run before body renders -->
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Details/summary reset (kept for any native usage) */
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details > summary::marker { display: none; }
+
+    /* Focus rings */
+    :focus:not(:focus-visible) { outline: none; box-shadow: none; }
+    :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 2px; }
+
+    body {
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    /* Light mode code block — GitHub light palette */
+    .code-block {
+      background: #f6f8fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      line-height: 1.75;
+      color: #24292f;
+    }
+
+    .comment  { color: #6e7781; }
+    .key      { color: #0550ae; }
+    .val-str  { color: #116329; }
+    .val-bool { color: #cf222e; }
+    .section  { color: #953800; }
+
+    /* Dark mode code block — GitHub dark palette */
+    html.dark .code-block {
+      background: #161b22;
+      border-color: #30363d;
+    }
+
+    html.dark .code-block pre { color: #e6edf3; }
+    html.dark .comment  { color: #8b949e; }
+    html.dark .key      { color: #79c0ff; }
+    html.dark .val-str  { color: #7ee787; }
+    html.dark .val-bool { color: #ff7b72; }
+    html.dark .section  { color: #e3b341; }
+
+    .verdict-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 6px;
+      flex-shrink: 0;
+      position: relative;
+      top: -1px;
+    }
+
+    /* Hebrew term tooltips — light mode */
+    .heb {
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-decoration-color: #9ca3af;
+      text-underline-offset: 3px;
+      cursor: help;
+      position: relative;
+    }
+
+    .heb::after {
+      content: attr(data-def);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #f9fafb;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-style: normal;
+      line-height: 1.5;
+      padding: 5px 10px;
+      border-radius: 5px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+      max-width: 380px;
+      min-width: 220px;
+      white-space: normal;
+      text-align: left;
+    }
+
+    .heb::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 3px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #111827;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+    }
+
+    .heb:hover::after,
+    .heb:hover::before { opacity: 1; }
+
+    /* Dark mode: invert tooltip to light */
+    html.dark .heb::after {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    html.dark .heb::before {
+      border-top-color: #f1f5f9;
+    }
+
+    /* FAQ panel starts closed */
+    .faq-panel {
+      height: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans antialiased">
+  <!-- NAV -->
+<header class="max-w-2xl mx-auto px-6 pt-8 pb-0 flex items-center justify-between">
+  <a href="#" class="flex items-center gap-2 font-mono text-sm font-medium text-blue-600 tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">
+    <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="7" y="0" width="4" height="5" rx="1" fill="currentColor"/>
+      <path d="M1 5H17V14L9 21L1 14Z" fill="currentColor"/>
+      <text x="9" y="11.5" text-anchor="middle" dominant-baseline="middle" font-family="monospace" font-size="6" font-weight="600" fill="white" letter-spacing="-0.3">&lt;_</text>
+    </svg>
+    SHABBAT.md
+  </a>
+  <div class="flex items-center gap-5">
+    <nav aria-label="Main navigation" class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+      <a href="#format"   class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Format</a>
+      <a href="#psak"     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Psak</a>
+      <a href="#melachot" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Melachot</a>
+      <a href="https://github.com/mitchellbernstein/shabbat.md" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">GitHub</a>
+    </nav>
+    <!-- Dark mode toggle -->
+    <button
+      id="theme-toggle"
+      aria-label="Toggle dark mode"
+      class="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded p-1"
+    >
+      <!-- Moon: shown in light mode -->
+      <svg class="dark:hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <!-- Sun: shown in dark mode -->
+      <svg class="hidden dark:block" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="max-w-2xl mx-auto px-6 pt-20 pb-16">
+  <div id="hero-content">
+    <h1 class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-50 mb-4">
+      SHABBAT.md
+    </h1>
+    <p class="text-gray-500 dark:text-gray-400 mb-2">Make Agents Kosher Again.</p>
+    <p class="text-gray-500 dark:text-gray-400 mb-10 max-w-lg">
+      An open format for declaring Shabbat and Yom Tov compliance settings for AI coding agents.
+      Because your tools should rest when you do.
+    </p>
+    <div class="flex items-center justify-between bg-blue-600 rounded-lg px-5 py-3 w-full group">
+      <pre class="font-mono text-sm text-white bg-transparent m-0 p-0 select-all" id="install-cmd">curl -fsSL shabbat.md/install | bash</pre>
+      <button
+        onclick="navigator.clipboard.writeText('curl -fsSL shabbat.md/install | bash').then(() => { this.innerHTML = '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'20 6 9 17 4 12\'></polyline></svg>'; setTimeout(() => { this.innerHTML = copyIcon; }, 1800); })"
+        class="ml-4 text-blue-200 hover:text-white transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 rounded"
+        aria-label="Copy install command"
+        title="Copy to clipboard"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+    </div>
+    <script>
+      var copyIcon = document.currentScript.previousElementSibling.querySelector('button').innerHTML;
+    </script>
+  </div>
+</section>
+
+<!-- ORIGIN -->
+<section class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">Origin</p>
+
+  <blockquote class="mb-8">
+    <p class="mb-2 text-gray-700 dark:text-gray-300">"Can a Jew let his agent run over Shabbat if the last prompt was Friday afternoon?"</p>
+    <footer class="text-sm text-gray-500 dark:text-gray-400">—
+      <cite class="not-italic">
+        <a href="https://x.com/jacob_posel" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@jacob_posel</a>
+      </cite>
+    </footer>
+  </blockquote>
+
+  <blockquote class="mb-8">
+    <p class="mb-2 text-gray-700 dark:text-gray-300">"If the agent is assuming your identity, no, but if it's openclaw style with its
+    own identity on its own machine should be fine."</p>
+    <footer class="text-sm text-gray-500 dark:text-gray-400">—
+      <cite class="not-italic">
+        <a href="https://x.com/levie" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@levie</a>
+      </cite>
+    </footer>
+  </blockquote>
+
+  <blockquote class="mb-10">
+    <p class="mb-2 font-mono text-blue-600 dark:text-blue-400">shabbat.md</p>
+    <footer class="text-sm text-gray-500 dark:text-gray-400">—
+      <cite class="not-italic">
+        <a href="https://x.com/jacob_posel" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@jacob_posel</a>
+      </cite>
+    </footer>
+  </blockquote>
+
+  <p class="text-gray-500 dark:text-gray-400 text-sm max-w-lg leading-relaxed">
+    @levie's reply is a precise application of
+    <em class="heb" data-def="/a-mee-RAH la-KOOM/ · instructing a non-Jew to perform labor on your behalf on Shabbat">amirah l'akum</em>
+    and
+    <em class="heb" data-def="/GRA-ma/ · indirect causation; an action whose effect completes after Shabbat begins">grama</em>
+    — two foundational halachic principles governing indirect labor.
+    SHABBAT.md makes this determination automatic.
+  </p>
+</section>
+
+<!-- FORMAT -->
+<section id="format" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">The Format</p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-3">What SHABBAT.md looks like</h2>
+  <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 max-w-lg">
+    Place a <code class="font-mono text-gray-700 dark:text-gray-300">SHABBAT.md</code> at the root of your repo.
+    Shabbat-aware agents read it to determine what they may do — and when.
+  </p>
+
+  <div class="code-block mb-10">
+    <pre><span class="comment"># SHABBAT.md</span>
+
+<span class="section">## Agent Identity</span>
+<span class="key">- identity_type:</span> <span class="val-str">service-account</span>   <span class="comment"># "service-account" | "user-proxy"</span>
+<span class="key">- credentials:</span>   <span class="val-str">dedicated</span>
+
+<span class="section">## Shabbat Schedule</span>
+<span class="key">- timezone:</span>       <span class="val-str">America/New_York</span>
+<span class="key">- pause_trigger:</span>  <span class="val-str">shkia</span>             <span class="comment"># or "candle-lighting" or ISO 8601</span>
+<span class="key">- resume_trigger:</span> <span class="val-str">havdalah</span>
+<span class="key">- observe_yom_tov:</span> <span class="val-bool">true</span>
+
+<span class="section">## Permitted Actions</span>
+<span class="key">- read</span>        <span class="comment"># queries, browsing, fetching</span>
+<span class="key">- summarize</span>   <span class="comment"># synthesis of existing data</span>
+<span class="key">- monitor</span>     <span class="comment"># watch and log, no alerting</span>
+
+<span class="section">## Forbidden Actions</span>
+<span class="key">- write</span>        <span class="comment"># disk, DB, external systems  (Kotev)</span>
+<span class="key">- deploy</span>       <span class="comment"># infra, releases             (Boneh)</span>
+<span class="key">- delete</span>       <span class="comment"># files, records              (Mochek)</span>
+<span class="key">- communicate</span>  <span class="comment"># email, Slack, SMS as user</span>
+<span class="key">- transact</span>     <span class="comment"># billing, payments           (Mekach u'memkar)</span>
+<span class="key">- commit</span>       <span class="comment"># git commits                 (Kotev)</span>
+
+<span class="section">## Human-in-the-Loop</span>
+<span class="key">- pause_hitl_on_shabbat:</span> <span class="val-bool">true</span>
+
+<span class="section">## Pikuach Nefesh</span>
+<span class="key">- life_safety_override:</span> <span class="val-bool">false</span>   <span class="comment"># true for medical/emergency systems</span>
+
+<span class="section">## Havdalah Audit</span>
+<span class="key">- audit_enabled:</span> <span class="val-bool">true</span>
+<span class="key">- format:</span> <span class="val-str">activity-log</span></pre>
+  </div>
+
+  <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Key fields</h3>
+  <dl class="space-y-4 text-sm">
+    <div>
+      <dt class="font-mono text-gray-900 dark:text-gray-100">identity_type</dt>
+      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">The single most consequential field. <code class="font-mono text-gray-700 dark:text-gray-300">service-account</code> means the agent has its own credentials and identity. <code class="font-mono text-gray-700 dark:text-gray-300">user-proxy</code> means it acts as you — and is subject to the same restrictions.</dd>
+    </div>
+    <div>
+      <dt class="font-mono text-gray-900 dark:text-gray-100">pause_trigger / resume_trigger</dt>
+      <dd class="text-gray-500 dark:text-gray-400 mt-0.5"><code class="font-mono text-gray-700 dark:text-gray-300">shkia</code>, <code class="font-mono text-gray-700 dark:text-gray-300">candle-lighting</code>, <code class="font-mono text-gray-700 dark:text-gray-300">tzait</code>, <code class="font-mono text-gray-700 dark:text-gray-300">havdalah</code>, or an ISO 8601 time. Times are computed from accurate zmanim for the configured timezone.</dd>
+    </div>
+    <div>
+      <dt class="font-mono text-gray-900 dark:text-gray-100">life_safety_override</dt>
+      <dd class="text-gray-500 dark:text-gray-400 mt-0.5">Set <code class="font-mono text-gray-700 dark:text-gray-300">true</code> for medical or emergency systems only. Pikuach nefesh overrides all of Shabbat by unanimous halachic consensus.</dd>
+    </div>
+  </dl>
+</section>
+
+<!-- PSAK -->
+<section id="psak" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">The Ruling</p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-3">The <span class="heb" data-def="/PSAK/ · a definitive halachic ruling; the verdict issued by a rabbinic authority">Psak</span></h2>
+  <p class="text-gray-500 dark:text-gray-400 text-sm mb-10 max-w-lg">
+    A Shabbat-aware agent reads your SHABBAT.md and issues one of three verdicts before the
+    <span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins, computed from the sun's position">shkia</span>
+    window begins. No surprises at sunset.
+  </p>
+
+  <div class="space-y-8 text-sm">
+    <div>
+      <p class="font-semibold text-green-600 dark:text-green-400 mb-2">
+        <span class="verdict-dot bg-green-500 inline-block"></span><span class="heb" data-def="/mu-TAR/ · permitted; allowed under Jewish law">MUTAR</span> — Permitted
+      </p>
+      <p class="text-gray-500 dark:text-gray-400 mb-3">All conditions are met. The agent may run through Shabbat.</p>
+      <ul class="text-gray-500 dark:text-gray-400 space-y-1 pl-4">
+        <li>Agent has its own identity and credentials</li>
+        <li>Last prompt was issued before shkia</li>
+        <li>No HITL checkpoint fires during Shabbat</li>
+        <li>Scope is read-only or actions were pre-authorized</li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
+        <span class="verdict-dot bg-yellow-500 inline-block"></span><span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area requiring a ruling">SAFEK</span> — Uncertain
+      </p>
+      <p class="text-gray-500 dark:text-gray-400 mb-3">Some criteria unmet or novel edge cases present. Restrict scope. Consult a <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on Jewish law">posek</span>.</p>
+      <ul class="text-gray-500 dark:text-gray-400 space-y-1 pl-4">
+        <li>Mixed identity signals</li>
+        <li>Write scope is bounded but present</li>
+        <li>Shared infrastructure ownership</li>
+        <li>Novel action types without halachic precedent</li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="font-semibold text-red-600 dark:text-red-400 mb-2">
+        <span class="verdict-dot bg-red-500 inline-block"></span><span class="heb" data-def="/a-SUR/ · forbidden; prohibited under Jewish law">ASUR</span> — Forbidden
+      </p>
+      <p class="text-gray-500 dark:text-gray-400 mb-3">One or more hard stops. Pause the agent before shkia on Friday.</p>
+      <ul class="text-gray-500 dark:text-gray-400 space-y-1 pl-4">
+        <li>Agent authenticates as the user in any form</li>
+        <li>Requires human prompting during Shabbat</li>
+        <li>Performs financial or destructive operations</li>
+        <li>Sends communications on the user's behalf</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-10 pt-6 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
+    <span class="font-medium text-gray-700 dark:text-gray-300 heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; this principle overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> override —
+    If the agent is part of a life-safety system, set
+    <code class="font-mono text-gray-700 dark:text-gray-300">life_safety_override: true</code>.
+    <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; this principle overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat. No <span class="heb" data-def="/PSAK/ · a definitive halachic ruling">psak</span> required.
+  </div>
+</section>
+
+<!-- MELACHOT -->
+<section id="melachot" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">Halachic Mapping</p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-3">The 39 <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">Melachot</span>, applied to compute</h2>
+  <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 max-w-lg">
+    Shabbat prohibits 39 categories of creative labor. The relevant ones map cleanly to what AI agents do.
+  </p>
+
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-gray-200 dark:border-gray-700 text-left">
+        <th scope="col" class="pb-3 font-medium text-gray-900 dark:text-gray-100 pr-8"><span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">Melachah</span></th>
+        <th scope="col" class="pb-3 font-medium text-gray-900 dark:text-gray-100 pr-8">Compute equivalent</th>
+        <th scope="col" class="pb-3 font-medium text-gray-900 dark:text-gray-100 text-right">Verdict</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/ko-TEV/ · writing; the forbidden labor of inscription or recording">Kotev</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(writing)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Writing files, committing code, DB inserts</td>
+        <td class="py-3 text-right font-mono text-xs text-red-600 dark:text-red-400">ASUR</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/bo-NEH/ · building or construction; creating or assembling a structure">Boneh</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(building)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Deploying infra, provisioning resources</td>
+        <td class="py-3 text-right font-mono text-xs text-red-600 dark:text-red-400">ASUR</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/ma-KEH be-PA-tish/ · the finishing hammer blow; completing any creative work">Makeh b'patish</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(finishing blow)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Shipping a release, completing a build</td>
+        <td class="py-3 text-right font-mono text-xs text-red-600 dark:text-red-400">ASUR</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/mo-CHEK/ · erasing; removing writing to make room for more">Mochek</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(erasing)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Deleting records, files, rm -rf</td>
+        <td class="py-3 text-right font-mono text-xs text-red-600 dark:text-red-400">ASUR</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/me-KACH u-mem-KAR/ · buying and selling; commercial transactions are forbidden on Shabbat">Mekach u'memkar</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(commerce)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Billing events, financial transactions</td>
+        <td class="py-3 text-right font-mono text-xs text-red-600 dark:text-red-400">ASUR</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/bo-RER/ · selecting or sorting; separating desired from undesired">Borer</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(selecting)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Filtering, ranking, recommendation serving</td>
+        <td class="py-3 text-right font-mono text-xs text-yellow-600 dark:text-yellow-400">SAFEK</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/tzad/ · trapping or capturing; taking hold of something that was free">Tzad</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(trapping)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Scraping, capturing live external data</td>
+        <td class="py-3 text-right font-mono text-xs text-yellow-600 dark:text-yellow-400">SAFEK</td>
+      </tr>
+      
+      <tr>
+        <td class="py-3 pr-8 text-gray-900 dark:text-gray-100">
+          <span class="heb" data-def="/ko-REH/ · reading; generally permitted unless it leads to writing or commerce">Kore</span> <span class="text-gray-500 dark:text-gray-500 text-xs">(reading)</span>
+        </td>
+        <td class="py-3 pr-8 text-gray-500 dark:text-gray-400">Read-only queries, browsing, log analysis</td>
+        <td class="py-3 text-right font-mono text-xs text-green-600 dark:text-green-400">MUTAR</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+<!-- EXAMPLES -->
+<section class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">Examples</p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-8">Example rulings</h2>
+
+  <div class="space-y-4 text-sm">
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        Read-only monitoring agent — own creds, pre-prompted Friday, no HITL
+        
+      </p>
+      <span class="font-mono text-xs text-green-600 dark:text-green-400 shrink-0 mt-0.5">MUTAR</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        LLM summarizer processing incoming emails, no replies sent
+        
+      </p>
+      <span class="font-mono text-xs text-green-600 dark:text-green-400 shrink-0 mt-0.5">MUTAR</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        On-call alerting agent for a medical device platform
+        <span class="text-gray-500 dark:text-gray-500 font-mono text-xs ml-1">· pikuach nefesh</span>
+      </p>
+      <span class="font-mono text-xs text-green-600 dark:text-green-400 shrink-0 mt-0.5">MUTAR</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        CI/CD bot with own service account — deploys on merge during Shabbat window
+        
+      </p>
+      <span class="font-mono text-xs text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5">SAFEK</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        Coding agent that opens PRs and commits — runs as the user's GitHub identity
+        
+      </p>
+      <span class="font-mono text-xs text-red-600 dark:text-red-400 shrink-0 mt-0.5">ASUR</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        Financial reconciliation agent that processes billing on Shabbat
+        
+      </p>
+      <span class="font-mono text-xs text-red-600 dark:text-red-400 shrink-0 mt-0.5">ASUR</span>
+    </div>
+    
+    <div class="flex items-start justify-between gap-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        Agent that asks user for approval mid-task (HITL checkpoint on Saturday)
+        
+      </p>
+      <span class="font-mono text-xs text-red-600 dark:text-red-400 shrink-0 mt-0.5">ASUR</span>
+    </div>
+    
+  </div>
+</section>
+
+<!-- HOW TO USE -->
+<section id="howto" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8">Getting Started</p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-8">How to use</h2>
+
+  <ol class="space-y-6 text-sm text-gray-500 dark:text-gray-400 list-decimal list-inside marker:text-gray-300 dark:marker:text-gray-600 marker:font-mono">
+    <li>
+      <span class="text-gray-700 dark:text-gray-200 font-medium">Add SHABBAT.md to your repo</span> —
+      place it at the root. Most Shabbat-aware agents find it automatically.
+    </li>
+    <li>
+      <span class="text-gray-700 dark:text-gray-200 font-medium">Declare the agent's identity</span> —
+      set <code class="font-mono text-gray-700 dark:text-gray-300">identity_type</code>. This single field determines whether <span class="heb" data-def="/a-mee-RAH la-KOOM/ · instructing a non-Jew to perform labor on your behalf; permitted under specific conditions">amirah l'akum</span> concerns apply.
+    </li>
+    <li>
+      <span class="text-gray-700 dark:text-gray-200 font-medium">Define the Shabbat window</span> —
+      set your timezone. The agent computes accurate <em class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</em> for pause and resume.
+    </li>
+    <li>
+      <span class="text-gray-700 dark:text-gray-200 font-medium">Scope permitted and forbidden actions</span> —
+      list what the agent may do. Map each capability to the <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> table above. When in doubt, leave it out.
+    </li>
+    <li>
+      <span class="text-gray-700 dark:text-gray-200 font-medium">Enable the Havdalah Audit</span> —
+      after <span class="heb" data-def="/hav-da-LAH/ · the ceremony marking the end of Shabbat; literally 'separation'">Havdalah</span>, the agent surfaces a log of all actions taken during the window. Review it.
+    </li>
+  </ol>
+
+  <div class="mt-10">
+    <p class="text-xs font-mono text-gray-500 dark:text-gray-500 mb-3">Shabbos Clock pattern</p>
+    <div class="code-block mb-6">
+      <pre><span class="comment"># pip install zmanim</span>
+<span class="key">from</span> zmanim <span class="key">import</span> Zmanim
+
+zmanim = Zmanim(geo=user_location, date=friday)
+agent.pause_at  = zmanim.shkia()
+agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
+    </div>
+
+    <p class="text-xs font-mono text-gray-500 dark:text-gray-500 mb-3">Scope lock before Shabbat</p>
+    <div class="code-block">
+      <pre>{
+  <span class="key">"shabbat_mode"</span>:    <span class="val-bool">true</span>,
+  <span class="key">"allowed_tools"</span>:   [<span class="val-str">"read"</span>, <span class="val-str">"search"</span>, <span class="val-str">"summarize"</span>],
+  <span class="key">"forbidden_tools"</span>: [<span class="val-str">"write"</span>, <span class="val-str">"deploy"</span>, <span class="val-str">"delete"</span>, <span class="val-str">"commit"</span>, <span class="val-str">"charge"</span>],
+  <span class="key">"hitl_disabled"</span>:   <span class="val-bool">true</span>,
+  <span class="key">"resume_at"</span>:       <span class="val-str">"&lt;havdalah_iso8601&gt;"</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100 dark:border-gray-800" data-animate>
+  <p class="text-xs font-mono text-gray-500 dark:text-gray-500 uppercase tracking-widest mb-8"><span class="heb normal-case tracking-normal" data-def="/she-ei-LOT u-te-shu-VOT/ · questions and answers; the classical form of halachic legal exchange">She'elot u'Teshuvot</span></p>
+  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-8">FAQ</h2>
+
+  <div class="text-sm">
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        Is SHABBAT.md a halachic authority?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">No. It is a configuration format and a framework for asking the right questions. It can identify the question; it cannot replace a qualified <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on matters of Jewish law">posek</span>. Novel edge cases — and AI agents are genuinely new territory — require a rabbi familiar with technology. This file tells you to consult one when you're in <span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area">SAFEK</span> territory.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        What if my agent needs to run during Shabbat for a genuine emergency?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Set <code class="font-mono text-gray-700 dark:text-gray-300">life_safety_override: true</code>. <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat by unanimous halachic consensus. This field is intentionally not gated — emergencies don't wait for configuration reviews.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        Does this apply to Yom Tov too?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Set <code class="font-mono text-gray-700 dark:text-gray-300">observe_yom_tov: true</code>. The same framework applies. Some <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> are permitted on <span class="heb" data-def="/yom TOV/ · a Jewish holiday; literally 'good day'">Yom Tov</span> when directly serving human needs (<span class="heb" data-def="/o-CHEL NE-fesh/ · preparing food for a person; the category of labor permitted on Yom Tov">ochel nefesh</span>), but their compute equivalents are narrow. The format errs conservative unless you explicitly expand the permitted list.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        What's the difference between shkia and candle-lighting as pause_trigger?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed"><span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins">Shkia</span> is halachic sunset — the technical start of Shabbat. Candle-lighting is typically 18 minutes earlier, a custom fence around the boundary. Conservative users may prefer candle-lighting. Both are computed from accurate <span class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</span> for your configured timezone.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        What about an agent in a datacenter I own — shvitat keilim?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed"><span class="heb" data-def="/shvi-TAT ke-LIM/ · the requirement for one's tools to rest on Shabbat; a rabbinic extension of Shabbat law">Shvitat keilim</span> (your tools resting) is a rabbinic concern distinct from <span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">melachah</span>. An agent running on infrastructure you own but don't personally operate, under its own identity, is in <span class="heb" data-def="/sa-FEK/ · doubt; a halachic gray area requiring a ruling">SAFEK</span> territory. Most contemporary <span class="heb" data-def="/po-SKEEM/ · plural of posek; halachic decisors">poskim</span> are lenient on passive automation in owned systems started before Shabbat — but consult a rabbi.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        Can I have multiple SHABBAT.md files in a monorepo?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Yes. The nearest file to the edited directory takes precedence. This mirrors how AGENTS.md works.</p>
+      </div>
+    </div>
+
+    <div>
+      <button class="faq-trigger w-full flex items-center justify-between px-3 py-4 -mx-3 rounded-lg text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-expanded="false">
+        Are there required fields?
+        <svg class="faq-chevron w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="faq-panel">
+        <p class="pb-4 text-gray-500 dark:text-gray-400 leading-relaxed">Only <code class="font-mono text-gray-700 dark:text-gray-300">identity_type</code> and <code class="font-mono text-gray-700 dark:text-gray-300">timezone</code>. Everything else has conservative defaults. SHABBAT.md is standard Markdown — no strict schema required.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="max-w-2xl mx-auto px-6 py-12 border-t border-gray-100 dark:border-gray-800">
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-500">
+    <span class="font-mono">SHABBAT.md</span>
+    <div class="flex gap-5">
+      <a href="https://github.com/mitchellbernstein/shabbat.md" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">GitHub</a>
+      <a href="https://github.com/mitchellbernstein/shabbat.md/blob/main/LICENSE" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">MIT</a>
+      <a href="https://github.com/mitchellbernstein/shabbat.md/blob/main/SHABBAT.md" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Raw spec</a>
+    </div>
+  </div>
+  <p class="text-xs text-gray-500 dark:text-gray-600 font-mono mt-4">
+    Copyright &copy; <span id="copy-year">2026</span> shabbat.md &middot;
+    <a href="https://github.com/mitchellbernstein" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">Mitchell Bernstein</a>
+  </p>
+</footer>
+
+
+  <script type="module">
+    import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm"
+
+    // ── Dark mode toggle ──────────────────────────────────────────────
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark')
+      localStorage.theme = isDark ? 'dark' : 'light'
+    })
+
+    // ── Hero entrance animation ────────────────────────────────────────
+    animate(
+      '#hero-content',
+      { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0px)'] },
+      { duration: 0.6, easing: [0.25, 0.46, 0.45, 0.94], delay: 0.05 }
+    )
+
+    // ── Scroll-in animations for sections ─────────────────────────────
+    document.querySelectorAll('[data-animate]').forEach(el => {
+      el.style.opacity = '0'
+      el.style.transform = 'translateY(18px)'
+    })
+
+    inView('[data-animate]', (entry) => {
+      animate(
+        entry.target,
+        { opacity: [0, 1], transform: ['translateY(18px)', 'translateY(0px)'] },
+        { duration: 0.5, easing: [0.25, 0.46, 0.45, 0.94] }
+      )
+    }, { amount: 0.08 })
+
+    // ── FAQ accordion ─────────────────────────────────────────────────
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      const panel   = trigger.nextElementSibling
+      const chevron = trigger.querySelector('.faq-chevron')
+
+      trigger.addEventListener('click', () => {
+        const isOpen  = trigger.getAttribute('aria-expanded') === 'true'
+        const opening = !isOpen
+        trigger.setAttribute('aria-expanded', String(opening))
+
+        if (opening) {
+          // Measure natural height, animate from 0
+          panel.style.height = '0px'
+          const targetH = panel.scrollHeight
+          animate(panel,   { height: [`0px`, `${targetH}px`] }, { duration: 0.3, easing: [0.25, 0.46, 0.45, 0.94] })
+            .finished.then(() => { panel.style.height = 'auto' })
+          animate(chevron, { rotate: 180 }, { duration: 0.25, easing: [0.25, 0.46, 0.45, 0.94] })
+        } else {
+          // Snap to pixel height, then animate to 0
+          panel.style.height = panel.getBoundingClientRect().height + 'px'
+          animate(panel,   { height: '0px' }, { duration: 0.22, easing: [0.25, 0.46, 0.45, 0.94] })
+          animate(chevron, { rotate: 0 },     { duration: 0.22, easing: [0.25, 0.46, 0.45, 0.94] })
+        }
+      })
+    })
+
+    // ── Smooth anchor scroll ───────────────────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault()
+        document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+  </script>
+  <script>document.getElementById('copy-year').textContent = new Date().getFullYear()</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -e
+
+# Detect repo root, fall back to current directory
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+TARGET="$REPO_ROOT/SHABBAT.md"
+
+if [ -f "$TARGET" ]; then
+  echo "SHABBAT.md already exists at $TARGET"
+  exit 0
+fi
+
+# Detect system timezone
+TIMEZONE=$(readlink /etc/localtime 2>/dev/null | sed 's|.*zoneinfo/||')
+if [ -z "$TIMEZONE" ]; then
+  TIMEZONE=$(timedatectl show -p Timezone --value 2>/dev/null || echo "UTC")
+fi
+if [ -z "$TIMEZONE" ]; then
+  TIMEZONE="UTC"
+fi
+
+cat > "$TARGET" << EOF
+# SHABBAT.md
+
+## Agent Identity
+- identity_type: service-account   # "service-account" | "user-proxy"
+- credentials: dedicated
+
+## Shabbat Schedule
+- timezone: $TIMEZONE
+- pause_trigger: shkia             # "shkia" | "candle-lighting" | ISO 8601
+- resume_trigger: havdalah
+- observe_yom_tov: true
+
+## Permitted Actions
+- read
+- summarize
+- monitor
+
+## Forbidden Actions
+- write
+- deploy
+- delete
+- communicate
+- transact
+- commit
+
+## Human-in-the-Loop
+- pause_hitl_on_shabbat: true
+
+## Pikuach Nefesh
+- life_safety_override: false
+
+## Havdalah Audit
+- audit_enabled: true
+- format: activity-log
+EOF
+
+echo ""
+echo "✓ Created SHABBAT.md at $TARGET"
+echo ""
+echo "  Review identity_type and adjust permitted/forbidden"
+echo "  actions to match your agent's capabilities."
+echo ""
+echo "  Shabbat Shalom."
+echo ""
