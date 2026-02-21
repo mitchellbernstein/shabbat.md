@@ -792,17 +792,17 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         const opening = !isOpen
         trigger.setAttribute('aria-expanded', String(opening))
 
-        const spring = { type: 'spring', stiffness: 600, damping: 26 }
+        const opts = { duration: 0.3, easing: [0.4, 0, 0.2, 1] }
         if (opening) {
           panel.style.height = '0px'
           const targetH = panel.scrollHeight
-          animate(panel, { height: [`0px`, `${targetH}px`] }, spring)
+          animate(panel, { height: [`0px`, `${targetH}px`] }, opts)
             .finished.then(() => { panel.style.height = 'auto' })
-          animate(chevron, { rotate: 180 }, spring)
+          animate(chevron, { rotate: 180 }, opts)
         } else {
           panel.style.height = panel.getBoundingClientRect().height + 'px'
-          animate(panel,   { height: '0px' }, spring)
-          animate(chevron, { rotate: 0 },     spring)
+          animate(panel,   { height: '0px' }, opts)
+          animate(chevron, { rotate: 0 },     opts)
         }
       })
     })
