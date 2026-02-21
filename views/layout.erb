@@ -31,6 +31,11 @@
   <style>
     html { scroll-behavior: smooth; }
 
+    /* Details/summary reset */
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details > summary::marker { display: none; }
+
     /* Ensure focus-visible rings don't appear on mouse click */
     :focus:not(:focus-visible) { outline: none; box-shadow: none; }
     :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 2px; }
