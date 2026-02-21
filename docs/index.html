@@ -165,90 +165,48 @@
       overflow: hidden;
     }
 
-    /* Edge progressive blur — soft frosted edges, gradual transition */
-    .edge-blur {
+    /*
+     * Progressive blur — stacked layers, each covering a smaller zone with
+     * increasing blur and a mask that fades it out, mimicking the GLSL
+     * smoothstep gradient used in the WebGL shader approach.
+     */
+    .pb-wrap {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 50;
     }
-    .edge-blur > div {
+    .pb {
       position: absolute;
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
-    }
-    .edge-blur-top {
-      top: 0;
       left: 0;
       right: 0;
-      height: 120px;
-      background: linear-gradient(to bottom,
-        rgba(255,255,255,0.35) 0%,
-        rgba(255,255,255,0.12) 35%,
-        transparent 100%);
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
-    .edge-blur-bottom {
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      background: linear-gradient(to top,
-        rgba(255,255,255,0.35) 0%,
-        rgba(255,255,255,0.12) 35%,
-        transparent 100%);
-    }
-    .edge-blur-left {
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      background: linear-gradient(to right,
-        rgba(255,255,255,0.3) 0%,
-        rgba(255,255,255,0.08) 40%,
-        transparent 100%);
-    }
-    .edge-blur-right {
-      top: 0;
-      bottom: 0;
-      right: 0;
-      width: 60px;
-      background: linear-gradient(to left,
-        rgba(255,255,255,0.3) 0%,
-        rgba(255,255,255,0.08) 40%,
-        transparent 100%);
-    }
-    html.dark .edge-blur-top {
-      background: linear-gradient(to bottom,
-        rgba(10,15,26,0.5) 0%,
-        rgba(10,15,26,0.18) 35%,
-        transparent 100%);
-    }
-    html.dark .edge-blur-bottom {
-      background: linear-gradient(to top,
-        rgba(10,15,26,0.5) 0%,
-        rgba(10,15,26,0.18) 35%,
-        transparent 100%);
-    }
-    html.dark .edge-blur-left {
-      background: linear-gradient(to right,
-        rgba(10,15,26,0.45) 0%,
-        rgba(10,15,26,0.12) 40%,
-        transparent 100%);
-    }
-    html.dark .edge-blur-right {
-      background: linear-gradient(to left,
-        rgba(10,15,26,0.45) 0%,
-        rgba(10,15,26,0.12) 40%,
-        transparent 100%);
-    }
+    /* Top layers: large zone/soft → small zone/strong */
+    .pb.top { top: 0; }
+    .pb.top.l1 { height: 140px; -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+    .pb.top.l2 { height: 90px;  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+    .pb.top.l3 { height: 55px;  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+    .pb.top.l4 { height: 28px;  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%); mask-image: linear-gradient(to bottom, black 0%, transparent 100%); }
+    /* Bottom layers */
+    .pb.bottom { bottom: 0; }
+    .pb.bottom.l1 { height: 140px; -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%); }
+    .pb.bottom.l2 { height: 90px;  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%); }
+    .pb.bottom.l3 { height: 55px;  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%); }
+    .pb.bottom.l4 { height: 28px;  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%); mask-image: linear-gradient(to top, black 0%, transparent 100%); }
   </style>
 </head>
 <body class="bg-white dark:bg-[#0a0f1a] text-gray-800 dark:text-gray-200 font-sans antialiased">
-  <div class="edge-blur" aria-hidden="true">
-    <div class="edge-blur-top"></div>
-    <div class="edge-blur-bottom"></div>
-    <div class="edge-blur-left"></div>
-    <div class="edge-blur-right"></div>
+  <div class="pb-wrap" aria-hidden="true">
+    <div class="pb top l1"></div>
+    <div class="pb top l2"></div>
+    <div class="pb top l3"></div>
+    <div class="pb top l4"></div>
+    <div class="pb bottom l1"></div>
+    <div class="pb bottom l2"></div>
+    <div class="pb bottom l3"></div>
+    <div class="pb bottom l4"></div>
   </div>
   <!-- NAV -->
 <header class="max-w-2xl mx-auto px-6 pt-8 pb-0 flex items-center justify-between">
@@ -889,6 +847,37 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
         }
       })
     })
+
+    // ── Progressive blur — stacked layers, scroll-velocity reactive ────
+    ;(() => {
+      const BASE   = [2, 6, 14, 28]   // blur px per layer (l1→l4)
+      const tops    = [...document.querySelectorAll('.pb.top')]
+      const bottoms = [...document.querySelectorAll('.pb.bottom')]
+
+      let lastY = window.scrollY, vel = 0, scale = 1
+
+      function setBlur(els, blurs) {
+        els.forEach((el, i) => {
+          const v = `blur(${blurs[i].toFixed(1)}px)`
+          el.style.backdropFilter = v
+          el.style.webkitBackdropFilter = v
+        })
+      }
+
+      function tick() {
+        const y   = window.scrollY
+        const raw = Math.abs(y - lastY)
+        lastY     = y
+        vel       = vel * 0.75 + raw * 0.25                 // smoothed velocity
+        const target = 1 + Math.min(vel / 20, 2.5)          // 1× at rest → 3.5× at speed
+        scale     = scale * 0.88 + target * 0.12            // ease toward target
+        const blurs = BASE.map(b => b * scale)
+        setBlur(tops, blurs)
+        setBlur(bottoms, blurs)
+        requestAnimationFrame(tick)
+      }
+      tick()
+    })()
 
     // ── Smooth anchor scroll ───────────────────────────────────────────
     document.querySelectorAll('a[href^="#"]').forEach(a => {
