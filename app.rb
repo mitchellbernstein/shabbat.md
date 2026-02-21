@@ -9,3 +9,8 @@ set :public_folder, File.join(__dir__, "public")
 get "/" do
   erb :index
 end
+
+get "/install" do
+  content_type "text/plain"
+  send_file File.join(__dir__, "public", "install")
+end

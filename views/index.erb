@@ -19,6 +19,10 @@
     An open format for declaring Shabbat and Yom Tov compliance settings for AI coding agents.
     Because your tools should rest when you do.
   </p>
+  <div class="code-block inline-flex items-center mb-6 text-xs">
+    <pre class="!py-2.5 !px-4 !text-xs">curl -fsSL shabbat.md/install | bash</pre>
+  </div>
+
   <div class="flex gap-4 text-sm">
     <a href="#format" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
       View the format
@@ -36,23 +40,41 @@
 
   <blockquote class="mb-8">
     <p class="mb-2 text-gray-700">"Can a Jew let his agent run over Shabbat if the last prompt was Friday afternoon?"</p>
-    <footer class="text-sm text-gray-500">— <cite class="font-mono not-italic">@jacob_posel</cite></footer>
+    <footer class="text-sm text-gray-500">—
+      <cite class="not-italic">
+        <a href="https://x.com/jacob_posel" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@jacob_posel</a>
+      </cite>
+    </footer>
   </blockquote>
 
   <blockquote class="mb-8">
     <p class="mb-2 text-gray-700">"If the agent is assuming your identity, no, but if it's openclaw style with its
     own identity on its own machine should be fine."</p>
-    <footer class="text-sm text-gray-500">— <cite class="font-mono not-italic">@levie</cite></footer>
+    <footer class="text-sm text-gray-500">—
+      <cite class="not-italic">
+        <a href="https://x.com/levie" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@levie</a>
+      </cite>
+    </footer>
   </blockquote>
 
   <blockquote class="mb-10">
     <p class="mb-2 font-mono text-blue-600">shabbat.md</p>
-    <footer class="text-sm text-gray-500">— <cite class="font-mono not-italic">@jacob_posel</cite></footer>
+    <footer class="text-sm text-gray-500">—
+      <cite class="not-italic">
+        <a href="https://x.com/jacob_posel" target="_blank" rel="noopener"
+           class="font-mono hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@jacob_posel</a>
+      </cite>
+    </footer>
   </blockquote>
 
   <p class="text-gray-500 text-sm max-w-lg leading-relaxed">
-    @levie's reply is a precise application of <em>amirah l'akum</em> and <em>grama</em> —
-    two foundational halachic principles governing indirect labor.
+    @levie's reply is a precise application of
+    <em class="heb" data-def="/a-mee-RAH la-KOOM/ · instructing a non-Jew to perform labor on your behalf on Shabbat">amirah l'akum</em>
+    and
+    <em class="heb" data-def="/GRA-ma/ · indirect causation; an action whose effect completes after Shabbat begins">grama</em>
+    — two foundational halachic principles governing indirect labor.
     SHABBAT.md makes this determination automatic.
   </p>
 </section>
@@ -123,16 +145,17 @@
 <!-- PSAK -->
 <section id="psak" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100">
   <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-8">The Ruling</p>
-  <h2 class="text-xl font-semibold text-gray-900 mb-3">The Psak</h2>
+  <h2 class="text-xl font-semibold text-gray-900 mb-3">The <span class="heb" data-def="/PSAK/ · a definitive halachic ruling; the verdict issued by a rabbinic authority">Psak</span></h2>
   <p class="text-gray-500 text-sm mb-10 max-w-lg">
     A Shabbat-aware agent reads your SHABBAT.md and issues one of three verdicts before the
-    Shabbat window begins. No surprises at sunset.
+    <span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins, computed from the sun's position">shkia</span>
+    window begins. No surprises at sunset.
   </p>
 
   <div class="space-y-8 text-sm">
     <div>
       <p class="font-semibold text-green-600 mb-2">
-        <span class="verdict-dot bg-green-500 inline-block"></span>MUTAR — Permitted
+        <span class="verdict-dot bg-green-500 inline-block"></span><span class="heb" data-def="/mu-TAR/ · permitted; allowed under Jewish law">MUTAR</span> — Permitted
       </p>
       <p class="text-gray-500 mb-3">All conditions are met. The agent may run through Shabbat.</p>
       <ul class="text-gray-500 space-y-1 pl-4">
@@ -145,9 +168,9 @@
 
     <div>
       <p class="font-semibold text-yellow-600 mb-2">
-        <span class="verdict-dot bg-yellow-500 inline-block"></span>SAFEK — Uncertain
+        <span class="verdict-dot bg-yellow-500 inline-block"></span><span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area requiring a ruling">SAFEK</span> — Uncertain
       </p>
-      <p class="text-gray-500 mb-3">Some criteria unmet or novel edge cases present. Restrict scope. Consult a posek.</p>
+      <p class="text-gray-500 mb-3">Some criteria unmet or novel edge cases present. Restrict scope. Consult a <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on Jewish law">posek</span>.</p>
       <ul class="text-gray-500 space-y-1 pl-4">
         <li>Mixed identity signals</li>
         <li>Write scope is bounded but present</li>
@@ -158,7 +181,7 @@
 
     <div>
       <p class="font-semibold text-red-600 mb-2">
-        <span class="verdict-dot bg-red-500 inline-block"></span>ASUR — Forbidden
+        <span class="verdict-dot bg-red-500 inline-block"></span><span class="heb" data-def="/a-SUR/ · forbidden; prohibited under Jewish law">ASUR</span> — Forbidden
       </p>
       <p class="text-gray-500 mb-3">One or more hard stops. Pause the agent before shkia on Friday.</p>
       <ul class="text-gray-500 space-y-1 pl-4">
@@ -171,17 +194,17 @@
   </div>
 
   <div class="mt-10 pt-6 border-t border-gray-100 text-sm text-gray-500">
-    <span class="font-medium text-gray-700">Pikuach nefesh override</span> —
+    <span class="font-medium text-gray-700 heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; this principle overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> override —
     If the agent is part of a life-safety system, set
     <code class="font-mono text-gray-700">life_safety_override: true</code>.
-    Pikuach nefesh overrides all of Shabbat. No psak required.
+    <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; this principle overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat. No <span class="heb" data-def="/PSAK/ · a definitive halachic ruling">psak</span> required.
   </div>
 </section>
 
 <!-- MELACHOT -->
 <section id="melachot" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100">
   <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-8">Halachic Mapping</p>
-  <h2 class="text-xl font-semibold text-gray-900 mb-3">The 39 Melachot, applied to compute</h2>
+  <h2 class="text-xl font-semibold text-gray-900 mb-3">The 39 <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">Melachot</span>, applied to compute</h2>
   <p class="text-gray-500 text-sm mb-8 max-w-lg">
     Shabbat prohibits 39 categories of creative labor. The relevant ones map cleanly to what AI agents do.
   </p>
@@ -189,25 +212,25 @@
   <table class="w-full text-sm">
     <thead>
       <tr class="border-b border-gray-200 text-left">
-        <th scope="col" class="pb-3 font-medium text-gray-900 pr-8">Melachah</th>
+        <th scope="col" class="pb-3 font-medium text-gray-900 pr-8"><span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">Melachah</span></th>
         <th scope="col" class="pb-3 font-medium text-gray-900 pr-8">Compute equivalent</th>
         <th scope="col" class="pb-3 font-medium text-gray-900 text-right">Verdict</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
       <% [
-        { m: "Kotev",          sub: "writing",         compute: "Writing files, committing code, DB inserts",       v: "ASUR",  vc: "text-red-600" },
-        { m: "Boneh",          sub: "building",        compute: "Deploying infra, provisioning resources",           v: "ASUR",  vc: "text-red-600" },
-        { m: "Makeh b'patish", sub: "finishing blow",  compute: "Shipping a release, completing a build",           v: "ASUR",  vc: "text-red-600" },
-        { m: "Mochek",         sub: "erasing",         compute: "Deleting records, files, rm -rf",                  v: "ASUR",  vc: "text-red-600" },
-        { m: "Mekach u'memkar",sub: "commerce",        compute: "Billing events, financial transactions",           v: "ASUR",  vc: "text-red-600" },
-        { m: "Borer",          sub: "selecting",       compute: "Filtering, ranking, recommendation serving",        v: "SAFEK", vc: "text-yellow-600" },
-        { m: "Tzad",           sub: "trapping",        compute: "Scraping, capturing live external data",           v: "SAFEK", vc: "text-yellow-600" },
-        { m: "Kore",           sub: "reading",         compute: "Read-only queries, browsing, log analysis",        v: "MUTAR", vc: "text-green-600" },
+        { m: "Kotev",          tip: "/ko-TEV/ · writing; the forbidden labor of inscription or recording",                       sub: "writing",         compute: "Writing files, committing code, DB inserts",       v: "ASUR",  vc: "text-red-600" },
+        { m: "Boneh",          tip: "/bo-NEH/ · building or construction; creating or assembling a structure",                   sub: "building",        compute: "Deploying infra, provisioning resources",           v: "ASUR",  vc: "text-red-600" },
+        { m: "Makeh b'patish", tip: "/ma-KEH be-PA-tish/ · the finishing hammer blow; completing any creative work",            sub: "finishing blow",  compute: "Shipping a release, completing a build",           v: "ASUR",  vc: "text-red-600" },
+        { m: "Mochek",         tip: "/mo-CHEK/ · erasing; removing writing to make room for more",                              sub: "erasing",         compute: "Deleting records, files, rm -rf",                  v: "ASUR",  vc: "text-red-600" },
+        { m: "Mekach u'memkar",tip: "/me-KACH u-mem-KAR/ · buying and selling; commercial transactions are forbidden on Shabbat", sub: "commerce",     compute: "Billing events, financial transactions",           v: "ASUR",  vc: "text-red-600" },
+        { m: "Borer",          tip: "/bo-RER/ · selecting or sorting; separating desired from undesired",                       sub: "selecting",       compute: "Filtering, ranking, recommendation serving",        v: "SAFEK", vc: "text-yellow-600" },
+        { m: "Tzad",           tip: "/tzad/ · trapping or capturing; taking hold of something that was free",                   sub: "trapping",        compute: "Scraping, capturing live external data",           v: "SAFEK", vc: "text-yellow-600" },
+        { m: "Kore",           tip: "/ko-REH/ · reading; generally permitted unless it leads to writing or commerce",           sub: "reading",         compute: "Read-only queries, browsing, log analysis",        v: "MUTAR", vc: "text-green-600" },
       ].each do |r| %>
       <tr>
         <td class="py-3 pr-8 text-gray-900">
-          <%= r[:m] %> <span class="text-gray-400 text-xs">(<%= r[:sub] %>)</span>
+          <span class="heb" data-def="<%= r[:tip] %>"><%= r[:m] %></span> <span class="text-gray-400 text-xs">(<%= r[:sub] %>)</span>
         </td>
         <td class="py-3 pr-8 text-gray-500"><%= r[:compute] %></td>
         <td class="py-3 text-right font-mono text-xs <%= r[:vc] %>"><%= r[:v] %></td>
@@ -255,19 +278,19 @@
     </li>
     <li>
       <span class="text-gray-700 font-medium">Declare the agent's identity</span> —
-      set <code class="font-mono text-gray-700">identity_type</code>. This single field determines whether amirah l'akum concerns apply.
+      set <code class="font-mono text-gray-700">identity_type</code>. This single field determines whether <span class="heb" data-def="/a-mee-RAH la-KOOM/ · instructing a non-Jew to perform labor on your behalf; permitted under specific conditions">amirah l'akum</span> concerns apply.
     </li>
     <li>
       <span class="text-gray-700 font-medium">Define the Shabbat window</span> —
-      set your timezone. The agent computes accurate <em>zmanim</em> for pause and resume.
+      set your timezone. The agent computes accurate <em class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</em> for pause and resume.
     </li>
     <li>
       <span class="text-gray-700 font-medium">Scope permitted and forbidden actions</span> —
-      list what the agent may do. Map each capability to the melachot table above. When in doubt, leave it out.
+      list what the agent may do. Map each capability to the <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> table above. When in doubt, leave it out.
     </li>
     <li>
       <span class="text-gray-700 font-medium">Enable the Havdalah Audit</span> —
-      after Shabbat, the agent surfaces a log of all actions taken during the window. Review it.
+      after <span class="heb" data-def="/hav-da-LAH/ · the ceremony marking the end of Shabbat; literally 'separation'">Havdalah</span>, the agent surfaces a log of all actions taken during the window. Review it.
     </li>
   </ol>
 
@@ -297,45 +320,38 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
 
 <!-- FAQ -->
 <section id="faq" class="max-w-2xl mx-auto px-6 py-16 border-t border-gray-100">
-  <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-8">She'elot u'Teshuvot</p>
+  <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-8"><span class="heb normal-case tracking-normal" data-def="/she-ei-LOT u-te-shu-VOT/ · questions and answers; the classical form of halachic legal exchange">She'elot u'Teshuvot</span></p>
   <h2 class="text-xl font-semibold text-gray-900 mb-8">FAQ</h2>
 
   <div class="space-y-8 text-sm">
-    <% [
-      {
-        q: "Is SHABBAT.md a halachic authority?",
-        a: "No. It is a configuration format and a framework for asking the right questions. It can identify the question; it cannot replace a qualified posek. Novel edge cases — and AI agents are genuinely new territory — require a rabbi familiar with technology. This file tells you to consult one when you're in SAFEK territory."
-      },
-      {
-        q: "What if my agent needs to run during Shabbat for a genuine emergency?",
-        a: "Set life_safety_override: true. Pikuach nefesh overrides all of Shabbat by unanimous halachic consensus. This field is intentionally not gated — emergencies don't wait for configuration reviews."
-      },
-      {
-        q: "Does this apply to Yom Tov too?",
-        a: "Set observe_yom_tov: true. The same framework applies. Some melachot are permitted on Yom Tov when directly serving human needs (ochel nefesh), but their compute equivalents are narrow. The format errs conservative unless you explicitly expand the permitted list."
-      },
-      {
-        q: "What's the difference between shkia and candle-lighting as pause_trigger?",
-        a: "Shkia is halachic sunset — the technical start of Shabbat. Candle-lighting is typically 18 minutes earlier, a custom fence around the boundary. Conservative users may prefer candle-lighting. Both are computed from accurate zmanim for your configured timezone."
-      },
-      {
-        q: "What about an agent in a datacenter I own — shvitat keilim?",
-        a: "Shvitat keilim (your tools resting) is a rabbinic concern distinct from melachah. An agent running on infrastructure you own but don't personally operate, under its own identity, is in SAFEK territory. Most contemporary poskim are lenient on passive automation in owned systems started before Shabbat — but consult a rabbi."
-      },
-      {
-        q: "Can I have multiple SHABBAT.md files in a monorepo?",
-        a: "Yes. The nearest file to the edited directory takes precedence. This mirrors how AGENTS.md works."
-      },
-      {
-        q: "Are there required fields?",
-        a: "Only identity_type and timezone. Everything else has conservative defaults. SHABBAT.md is standard Markdown — no strict schema required."
-      },
-    ].each do |item| %>
     <div>
-      <p class="font-medium text-gray-900 mb-1"><%= item[:q] %></p>
-      <p class="text-gray-500 leading-relaxed"><%= item[:a] %></p>
+      <p class="font-medium text-gray-900 mb-1">Is SHABBAT.md a halachic authority?</p>
+      <p class="text-gray-500 leading-relaxed">No. It is a configuration format and a framework for asking the right questions. It can identify the question; it cannot replace a qualified <span class="heb" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings on matters of Jewish law">posek</span>. Novel edge cases — and AI agents are genuinely new territory — require a rabbi familiar with technology. This file tells you to consult one when you're in <span class="heb" data-def="/sa-FEK/ · doubt or uncertainty; a halachic gray area">SAFEK</span> territory.</p>
     </div>
-    <% end %>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">What if my agent needs to run during Shabbat for a genuine emergency?</p>
+      <p class="text-gray-500 leading-relaxed">Set <code class="font-mono">life_safety_override: true</code>. <span class="heb" data-def="/pi-KU-ach NE-fesh/ · saving a life; overrides all of Shabbat by unanimous halachic consensus">Pikuach nefesh</span> overrides all of Shabbat by unanimous halachic consensus. This field is intentionally not gated — emergencies don't wait for configuration reviews.</p>
+    </div>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">Does this apply to Yom Tov too?</p>
+      <p class="text-gray-500 leading-relaxed">Set <code class="font-mono">observe_yom_tov: true</code>. The same framework applies. Some <span class="heb" data-def="/me-la-CHOT/ · the 39 categories of creative labor forbidden on Shabbat">melachot</span> are permitted on <span class="heb" data-def="/yom TOV/ · a Jewish holiday; literally 'good day'">Yom Tov</span> when directly serving human needs (<span class="heb" data-def="/o-CHEL NE-fesh/ · preparing food for a person; the category of labor permitted on Yom Tov">ochel nefesh</span>), but their compute equivalents are narrow. The format errs conservative unless you explicitly expand the permitted list.</p>
+    </div>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">What's the difference between shkia and candle-lighting as pause_trigger?</p>
+      <p class="text-gray-500 leading-relaxed"><span class="heb" data-def="/shki-AH/ · halachic sunset; the precise moment Shabbat begins">Shkia</span> is halachic sunset — the technical start of Shabbat. Candle-lighting is typically 18 minutes earlier, a custom fence around the boundary. Conservative users may prefer candle-lighting. Both are computed from accurate <span class="heb" data-def="/zma-NEEM/ · halachic times; calculated from the position of the sun at your location">zmanim</span> for your configured timezone.</p>
+    </div>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">What about an agent in a datacenter I own — shvitat keilim?</p>
+      <p class="text-gray-500 leading-relaxed"><span class="heb" data-def="/shvi-TAT ke-LIM/ · the requirement for one's tools to rest on Shabbat; a rabbinic extension of Shabbat law">Shvitat keilim</span> (your tools resting) is a rabbinic concern distinct from <span class="heb" data-def="/me-la-CHAH/ · a single category of creative labor forbidden on Shabbat">melachah</span>. An agent running on infrastructure you own but don't personally operate, under its own identity, is in <span class="heb" data-def="/sa-FEK/ · doubt; a halachic gray area requiring a ruling">SAFEK</span> territory. Most contemporary <span class="heb" data-def="/po-SKEEM/ · plural of posek; halachic decisors">poskim</span> are lenient on passive automation in owned systems started before Shabbat — but consult a rabbi.</p>
+    </div>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">Can I have multiple SHABBAT.md files in a monorepo?</p>
+      <p class="text-gray-500 leading-relaxed">Yes. The nearest file to the edited directory takes precedence. This mirrors how AGENTS.md works.</p>
+    </div>
+    <div>
+      <p class="font-medium text-gray-900 mb-1">Are there required fields?</p>
+      <p class="text-gray-500 leading-relaxed">Only <code class="font-mono">identity_type</code> and <code class="font-mono">timezone</code>. Everything else has conservative defaults. SHABBAT.md is standard Markdown — no strict schema required.</p>
+    </div>
   </div>
 </section>
 
@@ -350,7 +366,12 @@ agent.resume_at = zmanim.tzait_hakochavim(saturday)</pre>
     </div>
   </div>
   <p class="text-xs text-gray-500 font-mono mt-6">
-    Inspired by @jacob_posel's she'elah and @levie's psak.
-    Consult a qualified posek for actual halachic decisions. Shabbat Shalom.
+    Inspired by
+    <a href="https://x.com/jacob_posel" target="_blank" rel="noopener" class="hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@jacob_posel</a>'s
+    <span class="heb normal-case tracking-normal" data-def="/she-EI-lah/ · a question posed to a halachic authority">she'elah</span>
+    and
+    <a href="https://x.com/levie" target="_blank" rel="noopener" class="hover:text-blue-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-sm">@levie</a>'s
+    <span class="heb normal-case tracking-normal" data-def="/PSAK/ · a definitive halachic ruling">psak</span>.
+    Consult a qualified <span class="heb normal-case tracking-normal" data-def="/PO-sek/ · a halachic decisor; a rabbi who issues rulings">posek</span> for actual halachic decisions. Shabbat Shalom.
   </p>
 </footer>

@@ -70,6 +70,59 @@
       position: relative;
       top: -1px;
     }
+
+    /* Hebrew term tooltips */
+    .heb {
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-decoration-color: #9ca3af;
+      text-underline-offset: 3px;
+      cursor: help;
+      position: relative;
+    }
+
+    .heb::after {
+      content: attr(data-def);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #f9fafb;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-style: normal;
+      line-height: 1.5;
+      white-space: nowrap;
+      padding: 5px 10px;
+      border-radius: 5px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+      max-width: 280px;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .heb::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 3px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #111827;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+    }
+
+    .heb:hover::after,
+    .heb:hover::before {
+      opacity: 1;
+    }
   </style>
 </head>
 <body class="bg-white text-gray-800 font-sans antialiased">
