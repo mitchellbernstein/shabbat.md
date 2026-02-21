@@ -164,9 +164,68 @@
       height: 0;
       overflow: hidden;
     }
+
+    /* Edge progressive blur — soft frosted edges */
+    .edge-blur {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+    .edge-blur > div {
+      position: absolute;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .edge-blur-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%);
+    }
+    .edge-blur-bottom {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to top, rgba(255,255,255,0.6) 0%, transparent 100%);
+    }
+    .edge-blur-left {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      background: linear-gradient(to right, rgba(255,255,255,0.5) 0%, transparent 100%);
+    }
+    .edge-blur-right {
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 40px;
+      background: linear-gradient(to left, rgba(255,255,255,0.5) 0%, transparent 100%);
+    }
+    html.dark .edge-blur-top {
+      background: linear-gradient(to bottom, rgba(10,15,26,0.7) 0%, transparent 100%);
+    }
+    html.dark .edge-blur-bottom {
+      background: linear-gradient(to top, rgba(10,15,26,0.7) 0%, transparent 100%);
+    }
+    html.dark .edge-blur-left {
+      background: linear-gradient(to right, rgba(10,15,26,0.6) 0%, transparent 100%);
+    }
+    html.dark .edge-blur-right {
+      background: linear-gradient(to left, rgba(10,15,26,0.6) 0%, transparent 100%);
+    }
   </style>
 </head>
 <body class="bg-white dark:bg-[#0a0f1a] text-gray-800 dark:text-gray-200 font-sans antialiased">
+  <div class="edge-blur" aria-hidden="true">
+    <div class="edge-blur-top"></div>
+    <div class="edge-blur-bottom"></div>
+    <div class="edge-blur-left"></div>
+    <div class="edge-blur-right"></div>
+  </div>
   <!-- NAV -->
 <header class="max-w-2xl mx-auto px-6 pt-8 pb-0 flex items-center justify-between">
   <a href="#" class="font-mono text-sm font-medium text-blue-600 dark:text-blue-400 tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">
