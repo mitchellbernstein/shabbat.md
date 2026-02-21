@@ -209,7 +209,7 @@
         const opening = !isOpen
         trigger.setAttribute('aria-expanded', String(opening))
 
-        const opts = { duration: 0.3, easing: [0.4, 0, 0.2, 1] }
+        const opts = { duration: 0.45, easing: [0.33, 0, 0.67, 1] }
         if (opening) {
           panel.style.height = '0px'
           const targetH = panel.scrollHeight
