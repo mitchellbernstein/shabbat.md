@@ -7,8 +7,6 @@
     <nav aria-label="Main navigation" class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
       <a href="#howfits"  class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">How it fits</a>
       <a href="#format"   class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Format</a>
-      <a href="#psak"     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Psak</a>
-      <a href="#melachot" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">Melachot</a>
       <a href="https://github.com/mitchellbernstein/shabbat.md" target="_blank" rel="noopener" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm">GitHub</a>
     </nav>
     <!-- Dark mode toggle -->
@@ -43,9 +41,9 @@
       Make Agents Kosher Again. A config file that pauses your AI agents for Shabbat. Companion to <code class="font-mono text-gray-600 dark:text-gray-300">AGENTS.md</code> — your tools rest when you do.
     </p>
     <div class="flex items-center justify-between bg-blue-600 rounded-lg px-5 py-3 w-full group">
-      <pre class="font-mono text-sm text-white bg-transparent m-0 p-0 select-all" id="install-cmd">curl -fsSL shabbat.md/install | bash</pre>
+      <pre class="font-mono text-sm text-white bg-transparent m-0 p-0 select-all" id="install-cmd">curl -fsSL shabbatmd.com/install | bash</pre>
       <button
-        onclick="navigator.clipboard.writeText('curl -fsSL shabbat.md/install | bash').then(() => { this.innerHTML = '<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'20 6 9 17 4 12\'></polyline></svg>'; setTimeout(() => { this.innerHTML = copyIcon; }, 1800); })"
+        id="copy-install-btn"
         class="ml-4 text-blue-200 hover:text-white transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600 rounded"
         aria-label="Copy install command"
         title="Copy to clipboard"
@@ -57,7 +55,64 @@
       </button>
     </div>
     <script>
-      var copyIcon = document.currentScript.previousElementSibling.querySelector('button').innerHTML;
+      (() => {
+        const button = document.getElementById('copy-install-btn')
+        if (!button) return
+
+        const copyIcon = button.innerHTML
+        const copiedIcon = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'></polyline></svg>"
+        const emojis = ['🕯️', '🕎', '🌀', '✡️']
+
+        function launchEmojiBurst(sourceEl) {
+          const sourceRect = sourceEl.getBoundingClientRect()
+          const originX = sourceRect.left + sourceRect.width / 2
+          const originY = sourceRect.top + 6
+          const particleCount = 14
+
+          for (let i = 0; i < particleCount; i += 1) {
+            const particle = document.createElement('span')
+            particle.textContent = emojis[i % emojis.length]
+            particle.style.position = 'fixed'
+            particle.style.left = `${originX}px`
+            particle.style.top = `${originY}px`
+            particle.style.fontSize = `${16 + Math.random() * 8}px`
+            particle.style.pointerEvents = 'none'
+            particle.style.userSelect = 'none'
+            particle.style.zIndex = '120'
+
+            const driftX = (Math.random() - 0.5) * 150
+            const riseY = 70 + Math.random() * 70
+            const spin = (Math.random() - 0.5) * 70
+            const duration = 1400 + Math.random() * 500
+
+            particle.animate(
+              [
+                { transform: 'translate(0, 0) scale(0.8) rotate(0deg)', opacity: 1 },
+                { transform: `translate(${driftX * 0.9}px, -${riseY * 0.85}px) scale(1.02) rotate(${spin * 0.8}deg)`, opacity: 1, offset: 0.9 },
+                { transform: `translate(${driftX}px, -${riseY}px) scale(1.05) rotate(${spin}deg)`, opacity: 0 }
+              ],
+              { duration, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+            )
+
+            document.body.appendChild(particle)
+            window.setTimeout(() => particle.remove(), duration + 80)
+          }
+        }
+
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText('curl -fsSL shabbatmd.com/install | bash')
+          } catch (_) {
+            // Ignore clipboard errors; still show feedback animation.
+          }
+
+          button.innerHTML = copiedIcon
+          launchEmojiBurst(button)
+          window.setTimeout(() => {
+            button.innerHTML = copyIcon
+          }, 1800)
+        })
+      })()
     </script>
     <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Interactive — asks three questions and writes a configured file.</p>
   </div>

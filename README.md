@@ -66,7 +66,7 @@ Both can live at the root of the same repository.
 
 ## Website
 
-[shabbat.md](https://shabbat.md)
+[shabbatmd.com](https://shabbatmd.com)
 
 ## Contributing
 
