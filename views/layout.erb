@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHABBAT.md — Make Agents Kosher Again</title>
+  <title>shabbat.md — Make Agents Kosher Again</title>
   <meta name="description" content="A simple, open format for declaring Shabbat and Yom Tov compliance settings for AI coding agents. Because your tools should rest when you do." />
-  <meta property="og:title" content="SHABBAT.md" />
+  <meta property="og:title" content="shabbat.md" />
   <meta property="og:description" content="Make Agents Kosher Again. A simple, open format for Shabbat-compliant AI agent configuration." />
   <meta property="og:url" content="https://shabbatmd.com" />
+  <meta property="og:image" content="https://shabbatmd.com/social-thumbnail.svg" />
+  <meta name="twitter:title" content="shabbat.md" />
+  <meta name="twitter:description" content="Make Agents Kosher Again. A simple, open format for Shabbat-compliant AI agent configuration." />
+  <meta name="twitter:image" content="https://shabbatmd.com/social-thumbnail.svg" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Prevent dark mode flash — must run before body renders -->
@@ -38,6 +42,29 @@
 
   <style>
     html { scroll-behavior: smooth; }
+    #hero-title .char {
+      transition: color 90ms linear, text-shadow 90ms linear;
+    }
+
+    #hero-title .char.shimmer {
+      color: #2563eb;
+      text-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+    }
+
+    #hero-title .char.pre-shimmer {
+      color: #1e3a8a;
+      text-shadow: 0 0 8px rgba(30, 58, 138, 0.3);
+    }
+
+    html.dark #hero-title .char.shimmer {
+      color: #93c5fd;
+      text-shadow: 0 0 10px rgba(147, 197, 253, 0.45);
+    }
+
+    html.dark #hero-title .char.pre-shimmer {
+      color: #c6dffc;
+      text-shadow: 0 0 8px rgba(198, 223, 252, 0.32);
+    }
 
     /* Details/summary reset (kept for any native usage) */
     details > summary { list-style: none; }
@@ -212,6 +239,65 @@
 
   <script type="module">
     import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@11/+esm"
+
+    // ── Hero title reveal (Hebrew -> scramble -> final) ───────────────
+    const heroTitleEl = document.getElementById('hero-title')
+    if (heroTitleEl) {
+      const finalTitle = 'shabbat.md'
+      const initialHebrew = 'שבת.מד'
+      const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*+-?'
+
+      const renderTitle = (text, shimmerIndex = -1, preShimmerIndex = -1) => {
+        heroTitleEl.innerHTML = text
+          .split('')
+          .map((ch, idx) => {
+            const className = idx === shimmerIndex
+              ? 'char shimmer'
+              : idx === preShimmerIndex
+                ? 'char pre-shimmer'
+                : 'char'
+            return `<span class="${className}">${ch}</span>`
+          })
+          .join('')
+      }
+
+      renderTitle(initialHebrew)
+
+      const randomChar = () => randomChars[Math.floor(Math.random() * randomChars.length)]
+
+      window.setTimeout(() => {
+        const seedText = initialHebrew
+          .repeat(Math.ceil(finalTitle.length / initialHebrew.length))
+          .slice(0, finalTitle.length)
+        const staggerFrames = 2
+        const scrambleFramesPerChar = 4
+        const totalFrames = staggerFrames * (finalTitle.length - 1) + scrambleFramesPerChar
+        let frame = 0
+
+        const timer = window.setInterval(() => {
+          const shimmerIndex = Math.min(finalTitle.length - 1, Math.floor(frame / staggerFrames))
+          const preShimmerIndex = Math.max(-1, shimmerIndex - 1)
+
+          const frameText = finalTitle
+            .split('')
+            .map((char, idx) => {
+              const start = idx * staggerFrames
+              const end = start + scrambleFramesPerChar
+              if (frame < start) return seedText[idx]
+              if (frame < end) return randomChar()
+              return char
+            })
+            .join('')
+          renderTitle(frameText, shimmerIndex, preShimmerIndex)
+
+          frame += 1
+          if (frame > totalFrames) {
+            window.clearInterval(timer)
+            heroTitleEl.textContent = finalTitle
+          }
+        }, 28)
+      }, 500)
+    }
 
     // ── Dark mode toggle ──────────────────────────────────────────────
     document.getElementById('theme-toggle')?.addEventListener('click', () => {
