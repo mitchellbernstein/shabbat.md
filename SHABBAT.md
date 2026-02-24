@@ -1,7 +1,6 @@
 # SHABBAT.md
 
-Compliance config for AI agents during Shabbat and Yom Tov. Declares when to pause,
-what is permitted, and what is forbidden.
+Compliance config for AI agents during Shabbat and Yom Tov. Declares when to pause, what is permitted, and what is forbidden.
 
 **For agents:** Read this file and .shabbat/REFERENCE.md. Before running, execute
 `.shabbat/shabbat_check.py` — it computes shkia/tzait locally (no API). If is_shabbat=1,

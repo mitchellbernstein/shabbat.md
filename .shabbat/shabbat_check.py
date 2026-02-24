@@ -1,221 +1,89 @@
-#!/usr/bin/env python3
-"""
-Shabbat check — pure Python, no API. Computes shkia/tzait from SHABBAT.md.
-Uses NOAA formula (Meeus). Stdlib only. Supports all IANA timezones.
-"""
-from __future__ import annotations
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'">
+    <title>Page not found &middot; GitHub Pages</title>
+    <style type="text/css" media="screen">
+      body {
+        background-color: #f1f1f1;
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
 
-import math
-import re
-import sys
-from datetime import datetime, time, timedelta
-from pathlib import Path
+      .container { margin: 50px auto 40px auto; width: 600px; text-align: center; }
 
-# Timezone → (lat, lon) for approximate zmanim. Uses representative city.
-# Unknown timezones: coordinates derived from UTC offset (works for any IANA zone).
-TZ_COORDS: dict[str, tuple[float, float]] = {
-    "America/New_York": (40.71, -74.01),
-    "America/Chicago": (41.88, -87.63),
-    "America/Denver": (39.74, -104.99),
-    "America/Los_Angeles": (34.05, -118.24),
-    "America/Phoenix": (33.45, -112.07),
-    "America/Detroit": (42.33, -83.05),
-    "America/Toronto": (43.65, -79.38),
-    "America/Vancouver": (49.28, -123.12),
-    "America/Mexico_City": (19.43, -99.13),
-    "America/Sao_Paulo": (-23.55, -46.63),
-    "Europe/London": (51.51, -0.13),
-    "Europe/Paris": (48.86, 2.35),
-    "Europe/Berlin": (52.52, 13.41),
-    "Europe/Amsterdam": (52.37, 4.89),
-    "Europe/Jerusalem": (31.78, 35.22),
-    "Asia/Jerusalem": (31.78, 35.22),
-    "Asia/Tel_Aviv": (32.09, 34.78),
-    "Australia/Sydney": (-33.87, 151.21),
-    "Australia/Melbourne": (-37.81, 144.96),
-    "Pacific/Auckland": (-36.85, 174.76),
-    "UTC": (51.51, 0.0),
-}
+      a { color: #4183c4; text-decoration: none; }
+      a:hover { text-decoration: underline; }
 
+      h1 { width: 800px; position:relative; left: -100px; letter-spacing: -1px; line-height: 60px; font-size: 60px; font-weight: 100; margin: 0px 0 50px 0; text-shadow: 0 1px 0 #fff; }
+      p { color: rgba(0, 0, 0, 0.5); margin: 20px 0; line-height: 1.6; }
 
-def _parse_shabbat_md(path: Path) -> dict[str, str]:
-    """Parse SHABBAT.md for timezone, pause_trigger, resume_trigger, life_safety_override."""
-    out: dict[str, str] = {}
-    content = path.read_text()
-    for line in content.splitlines():
-        line = line.strip()
-        if line.startswith("- timezone:"):
-            out["timezone"] = line.split(":", 1)[1].strip()
-        elif line.startswith("- pause_trigger:"):
-            out["pause_trigger"] = line.split(":", 1)[1].strip()
-        elif line.startswith("- resume_trigger:"):
-            out["resume_trigger"] = line.split(":", 1)[1].strip()
-        elif line.startswith("- life_safety_override:"):
-            out["life_safety_override"] = re.search(r"true|false", line, re.I)[0].lower()
-        elif line.startswith("- latitude:") or line.startswith("- lat:"):
-            out["latitude"] = line.split(":", 1)[1].strip()
-        elif line.startswith("- longitude:") or line.startswith("- lon:"):
-            out["longitude"] = line.split(":", 1)[1].strip()
-    return out
+      ul { list-style: none; margin: 25px 0; padding: 0; }
+      li { display: table-cell; font-weight: bold; width: 1%; }
 
+      .logo { display: inline-block; margin-top: 35px; }
+      .logo-img-2x { display: none; }
+      @media
+      only screen and (-webkit-min-device-pixel-ratio: 2),
+      only screen and (   min--moz-device-pixel-ratio: 2),
+      only screen and (     -o-min-device-pixel-ratio: 2/1),
+      only screen and (        min-device-pixel-ratio: 2),
+      only screen and (                min-resolution: 192dpi),
+      only screen and (                min-resolution: 2dppx) {
+        .logo-img-1x { display: none; }
+        .logo-img-2x { display: inline-block; }
+      }
 
-def _sun_times(lat: float, lon: float, when: datetime, zenith_sunset: float = 90.833, zenith_tzait: float = 96.0) -> tuple[time, time]:
-    """
-    NOAA-style sun position. Returns (sunset_time, tzait_time) in local time.
-    zenith_sunset: 90.833 for shkia (refraction + solar disk)
-    zenith_tzait: 96 for 6° below horizon (nightfall)
-    """
-    day = when.toordinal() - (734124 - 40529)
-    t = when.time()
-    time_frac = (t.hour + t.minute / 60.0 + t.second / 3600.0) / 24.0
-    tz_offset = when.utcoffset()
-    tz_hours = tz_offset.total_seconds() / 3600.0 if tz_offset else 0
+      #suggestions {
+        margin-top: 35px;
+        color: #ccc;
+      }
+      #suggestions a {
+        color: #666666;
+        font-weight: 200;
+        font-size: 14px;
+        margin: 0 10px;
+      }
 
-    Jday = day + 2415018.5 + time_frac - tz_hours / 24
-    Jcent = (Jday - 2451545) / 36525
+    </style>
+  </head>
+  <body>
 
-    Manom = 357.52911 + Jcent * (35999.05029 - 0.0001537 * Jcent)
-    Mlong = (280.46646 + Jcent * (36000.76983 + Jcent * 0.0003032)) % 360
-    Eccent = 0.016708634 - Jcent * (0.000042037 + 0.0001537 * Jcent)
-    Mobliq = 23 + (26 + ((21.448 - Jcent * (46.815 + Jcent * (0.00059 - Jcent * 0.001813)))) / 60) / 60
-    obliq = Mobliq + 0.00256 * math.cos(math.radians(125.04 - 1934.136 * Jcent))
-    vary = math.tan(math.radians(obliq / 2)) ** 2
-    Seqcent = (
-        math.sin(math.radians(Manom)) * (1.914602 - Jcent * (0.004817 + 0.000014 * Jcent))
-        + math.sin(math.radians(2 * Manom)) * (0.019993 - 0.000101 * Jcent)
-        + math.sin(math.radians(3 * Manom)) * 0.000289
-    )
-    Struelong = Mlong + Seqcent
-    Sapplong = Struelong - 0.00569 - 0.00478 * math.sin(math.radians(125.04 - 1934.136 * Jcent))
-    declination = math.degrees(math.asin(math.sin(math.radians(obliq)) * math.sin(math.radians(Sapplong))))
+    <div class="container">
 
-    eqtime = 4 * math.degrees(
-        vary * math.sin(2 * math.radians(Mlong))
-        - 2 * Eccent * math.sin(math.radians(Manom))
-        + 4 * Eccent * vary * math.sin(math.radians(Manom)) * math.cos(2 * math.radians(Mlong))
-        - 0.5 * vary * vary * math.sin(4 * math.radians(Mlong))
-        - 1.25 * Eccent * Eccent * math.sin(2 * math.radians(Manom))
-    )
+      <h1>404</h1>
+      <p><strong>File not found</strong></p>
 
-    def hour_angle(zenith: float) -> float:
-        cos_ha = (
-            math.cos(math.radians(zenith))
-            - math.sin(math.radians(lat)) * math.sin(math.radians(declination))
-        ) / (math.cos(math.radians(lat)) * math.cos(math.radians(declination)))
-        cos_ha = max(-1, min(1, cos_ha))
-        return math.degrees(math.acos(cos_ha))
+      <p>
+        The site configured at this address does not
+        contain the requested file.
+      </p>
 
-    ha_sunset = hour_angle(zenith_sunset)
-    ha_tzait = hour_angle(zenith_tzait)
+      <p>
+        If this is your site, make sure that the filename case matches the URL
+        as well as any file permissions.<br>
+        For root URLs (like <code>http://example.com/</code>) you must provide an
+        <code>index.html</code> file.
+      </p>
 
-    solarnoon_frac = (720 - 4 * lon - eqtime + tz_hours * 60) / 1440
-    sunset_frac = solarnoon_frac + ha_sunset * 4 / 1440
-    tzait_frac = solarnoon_frac + ha_tzait * 4 / 1440
+      <p>
+        <a href="https://help.github.com/pages/">Read the full documentation</a>
+        for more information about using <strong>GitHub Pages</strong>.
+      </p>
 
-    def frac_to_time(frac: float) -> time:
-        frac = frac % 1.0
-        if frac < 0:
-            frac += 1
-        hours = 24.0 * frac
-        h = int(hours)
-        m = int((hours - h) * 60)
-        s = int(((hours - h) * 60 - m) * 60)
-        return time(hour=h, minute=m, second=s)
+      <div id="suggestions">
+        <a href="https://githubstatus.com">GitHub Status</a> &mdash;
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
+      </div>
 
-    return frac_to_time(sunset_frac), frac_to_time(tzait_frac)
+      <a href="/" class="logo logo-img-1x">
+        <img width="32" height="32" title="" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFMTZCRDY3REIzRjAxMUUyQUQzREIxQzRENUFFNUM5NiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpFMTZCRDY3RUIzRjAxMUUyQUQzREIxQzRENUFFNUM5NiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkUxNkJENjdCQjNGMDExRTJBRDNEQjFDNEQ1QUU1Qzk2IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkUxNkJENjdDQjNGMDExRTJBRDNEQjFDNEQ1QUU1Qzk2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+SM9MCAAAA+5JREFUeNrEV11Ik1EY3s4+ddOp29Q5b0opCgKFsoKoi5Kg6CIhuwi6zLJLoYLopq4qsKKgi4i6CYIoU/q5iDAKs6syoS76IRWtyJ+p7cdt7sf1PGOD+e0c3dygAx/67ZzzPM95/877GYdHRg3ZjMXFxepQKNS6sLCwJxqNNuFpiMfjVs4ZjUa/pmmjeD6VlJS8NpvNT4QQ7mxwjSsJiEQim/1+/9lgMHgIr5ohuxG1WCw9Vqv1clFR0dCqBODElV6v90ogEDjGdYbVjXhpaendioqK07CIR7ZAqE49PT09BPL2PMgTByQGsYiZlQD4uMXtdr+JxWINhgINYhGT2MsKgMrm2dnZXgRXhaHAg5jEJodUAHxux4LudHJE9RdEdA+i3Juz7bGHe4mhE9FNrgwBCLirMFV9Okh5eflFh8PR5nK5nDabrR2BNJlKO0T35+Li4n4+/J+/JQCxhmu5h3uJoXNHPbmWZAHMshWB8l5/ipqammaAf0zPDDx1ONV3vurdidqwAQL+pEc8sLcAe1CCvQ3YHxIW8Pl85xSWNC1hADDIv0rIE/o4J0k3kww4xSlwIhcq3EFFOm7KN/hUGOQkt0CFa5WpNJlMvxBEz/IVQAxg/ZRZl9wiHA63yDYieM7DnLP5CiAGsC7I5sgtYKJGWe2A8seFqgFJrJjEPY1Cn3pJ8/9W1e5VWsFDTEmFrBcoDhZJEQkXuhICMyKpjhahqN21hRYATKfUOlDmkygrR4o4C0VOLGJKrOITKB4jijzdXygBKixyC5TDQdnk/Pz8qRw6oOWGlsTKGOQW6OH6FBWsyePxdOXLTgxiyebILZCjz+GLgMIKnXNzc49YMlcRdHXcSwxFVgTInQhC9G33UhNoJLuqq6t345p9y3eUy8OTk5PjAHuI9uo4b07FBaOhsu0A4Unc+T1TU1Nj3KsSSE5yJ65jqF2DDd8QqWYmAZrIM2VlZTdnZmb6AbpdV9V6ec9znf5Q7HjYumdRE0JOp3MjitO4SFa+cZz8Umqe3TCbSLvdfkR/kWDdNQl5InuTcysOcpFT35ZrbBxx4p3JAHlZVVW1D/634VRt+FvLBgK/v5LV9WS+10xMTEwtRw7XvqOL+e2Q8V3AYIOIAXQ26/heWVnZCVfcyKHg2CBgTpmPmjYM8l24GyaUHyaIh7XwfR9ErE8qHoDfn2LTNAVC0HX6MFcBIP8Bi+6F6cdW/DICkANRfx99fEYFQ7Nph5i/uQiA214gno7K+guhaiKg9gC62+M8eR7XsBsYJ4ilam60Fb7r7uAj8wFyuwM1oIOWgfmDy6RXEEQzJMPe23DXrVS7rtyD3Df8z/FPgAEAzWU5Ku59ZAUAAAAASUVORK5CYII=">
+      </a>
 
-
-def main() -> int:
-    repo = Path.cwd()
-    shabbat_md = repo / "SHABBAT.md"
-    if not shabbat_md.exists():
-        for parent in repo.parents:
-            if (parent / "SHABBAT.md").exists():
-                shabbat_md = parent / "SHABBAT.md"
-                break
-        else:
-            print("SHABBAT.md not found", file=sys.stderr)
-            return 1
-
-    cfg = _parse_shabbat_md(shabbat_md)
-    tz_name = cfg.get("timezone", "America/New_York")
-    pause = cfg.get("pause_trigger", "shkia")
-    resume = cfg.get("resume_trigger", "tzait")
-    life_safety = cfg.get("life_safety_override", "false").lower() == "true"
-
-    if life_safety:
-        print("life_safety_override=true")
-        print("is_shabbat=0")
-        return 0
-
-    lat = lon = None
-    if "latitude" in cfg and "longitude" in cfg:
-        try:
-            lat = float(cfg["latitude"])
-            lon = float(cfg["longitude"])
-        except ValueError:
-            pass
-    if lat is None or lon is None:
-        coords = TZ_COORDS.get(tz_name)
-        if coords is not None:
-            lat, lon = coords
-        else:
-            # Fallback: derive from UTC offset. Works for any IANA timezone.
-            try:
-                from zoneinfo import ZoneInfo
-            except ImportError:
-                print("zoneinfo not available (Python < 3.9)", file=sys.stderr)
-                return 1
-            try:
-                tz = ZoneInfo(tz_name)
-                now_temp = datetime.now(tz)
-                offset = now_temp.utcoffset()
-                offset_hours = offset.total_seconds() / 3600.0 if offset else 0
-                lon = offset_hours * 15.0  # 15° per hour (UTC+3 → 45°E)
-                lat = 30.0  # default mid-latitude; add latitude/longitude to SHABBAT.md for accuracy
-            except Exception:
-                lat, lon = 40.71, -74.01  # America/New_York fallback
-
-    try:
-        from zoneinfo import ZoneInfo
-    except ImportError:
-        print("zoneinfo not available (Python < 3.9)", file=sys.stderr)
-        return 1
-
-    try:
-        now = datetime.now(ZoneInfo(tz_name))
-    except Exception:
-        print(f"Invalid timezone: {tz_name}", file=sys.stderr)
-        return 1
-    sunset_t, tzait_t = _sun_times(lat, lon, now)
-
-    sunset_dt = now.replace(hour=sunset_t.hour, minute=sunset_t.minute, second=sunset_t.second, microsecond=0)
-    tzait_dt = now.replace(hour=tzait_t.hour, minute=tzait_t.minute, second=tzait_t.second, microsecond=0)
-    candle_dt = sunset_dt - timedelta(minutes=18)
-
-    if pause == "candle-lighting":
-        pause_dt = candle_dt
-    else:
-        pause_dt = sunset_dt
-    if resume == "havdalah" or resume == "tzait":
-        resume_dt = tzait_dt
-    else:
-        resume_dt = tzait_dt
-
-    is_friday = now.weekday() == 4
-    is_saturday = now.weekday() == 5
-
-    is_shabbat = False
-    if is_friday and now >= pause_dt:
-        is_shabbat = True
-    elif is_saturday and now < resume_dt:
-        is_shabbat = True
-
-    print(f"pause_at={pause_dt.strftime('%H:%M')}")
-    print(f"resume_at={resume_dt.strftime('%H:%M')}")
-    print(f"is_shabbat={'1' if is_shabbat else '0'}")
-    return 0 if not is_shabbat else 2
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+      <a href="/" class="logo logo-img-2x">
+        <img width="32" height="32" title="" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEQUM1QkUxRUI0MUMxMUUyQUQzREIxQzRENUFFNUM5NiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEQUM1QkUxRkI0MUMxMUUyQUQzREIxQzRENUFFNUM5NiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkUxNkJENjdGQjNGMDExRTJBRDNEQjFDNEQ1QUU1Qzk2IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkUxNkJENjgwQjNGMDExRTJBRDNEQjFDNEQ1QUU1Qzk2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+hfPRaQAAB6lJREFUeNrsW2mM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">
+      </a>
+    </div>
+  </body>
+</html>

@@ -9,10 +9,23 @@ SHABBAT_DIR="$REPO_ROOT/.shabbat"
 if [ -f "$TARGET" ]; then
   echo ""
   echo "SHABBAT.md already exists at $TARGET"
-  echo "To enable for agents, add to AGENTS.md: Read SHABBAT.md and honor its Shabbat compliance settings."
-  exit 0
+  echo "Installing agent-specific rules for detected agents..."
+  # Fall through to agent detection and rule installation (skip SHABBAT.md creation)
+  SKIP_CREATE=1
+else
+  SKIP_CREATE=0
 fi
 
+# Read from terminal when stdin is a pipe (e.g. curl | bash)
+read_input() {
+  if [ -t 0 ]; then
+    read -r "$@"
+  else
+    read -r "$@" < /dev/tty 2>/dev/null || true
+  fi
+}
+
+if [ "$SKIP_CREATE" = "0" ]; then
 # Detect system timezone
 TIMEZONE=$(readlink /etc/localtime 2>/dev/null | sed 's|.*zoneinfo/||')
 if [ -z "$TIMEZONE" ]; then
@@ -26,15 +39,6 @@ echo ""
 echo "  Setting up SHABBAT.md"
 echo "  ─────────────────────────────────────"
 echo ""
-
-# Read from terminal when stdin is a pipe (e.g. curl | bash)
-read_input() {
-  if [ -t 0 ]; then
-    read -r "$@"
-  else
-    read -r "$@" < /dev/tty 2>/dev/null || true
-  fi
-}
 
 # ── Question 1: Timezone ──────────────────────────────────────────────
 echo "  Timezone detected: $TIMEZONE"
@@ -206,16 +210,40 @@ Uses NOAA formula for shkia (sunset) and tzait (6 deg below horizon). Supports a
 
 ## How to enable
 
-SHABBAT.md only takes effect if something tells agents to read it. Use one of these:
+SHABBAT.md only takes effect if something tells agents to read it. The install script auto-detects agents by project directory:
 
-1. **AGENTS.md** — Add: `Read SHABBAT.md and honor its Shabbat compliance settings.` (The install script does this if you do not have AGENTS.md.)
-2. **Agent/workspace rules** — Add a rule in your coding agent config (e.g. Cursor rules, workspace settings) that instructs it to check SHABBAT.md before running. Works for any agent that reads project rules.
-3. **Native support** — Some agents may add built-in SHABBAT.md support. When available, no setup needed.
+| Agent | Detection | Rule location |
+|-------|-----------|---------------|
+| Cursor | .cursor/ exists | .cursor/rules/shabbat.mdc |
+| Windsurf | .windsurf/ exists | .windsurf/rules/shabbat.md |
+| Continue | .continue/ exists | .continue/rules/shabbat.md |
+| Claude Code | .claude/ exists | .claude/rules/shabbat.md |
+| Aider | .aider.conf.yml exists | CONVENTIONS.md |
+| Factory, Codex, OpenCode, Pi, Zed | AGENTS.md | AGENTS.md |
+
+## Updates
+
+Re-run the install script to refresh .shabbat/shabbat_check.py and REFERENCE.md.
+Your SHABBAT.md is never overwritten.
 
 ## Full spec
 
 https://shabbatmd.com
 REFEOF
+fi
+
+fi
+# end SKIP_CREATE block
+
+# Refresh .shabbat/ when SHABBAT.md exists (re-run = update)
+if [ -f "$TARGET" ]; then
+  mkdir -p "$SHABBAT_DIR"
+  curl -sSL https://shabbatmd.com/REFERENCE.md -o "$SHABBAT_DIR/REFERENCE.md" 2>/dev/null || \
+    curl -sSL https://raw.githubusercontent.com/mitchellbernstein/shabbat.md/main/public/REFERENCE.md -o "$SHABBAT_DIR/REFERENCE.md" 2>/dev/null || true
+  curl -sSL https://shabbatmd.com/shabbat_check.py -o "$SHABBAT_DIR/shabbat_check.py" 2>/dev/null || \
+    curl -sSL https://raw.githubusercontent.com/mitchellbernstein/shabbat.md/main/public/shabbat_check.py -o "$SHABBAT_DIR/shabbat_check.py" 2>/dev/null || true
+  [ -s "$SHABBAT_DIR/shabbat_check.py" ] && chmod +x "$SHABBAT_DIR/shabbat_check.py"
+  REFRESHED_SHABBAT=1
 fi
 
 # ── Create or update AGENTS.md ────────────────────────────────────────
@@ -237,13 +265,89 @@ $SHABBAT_LINE
 AGENTSEOF
 fi
 
+# ── Agent-specific rules (detect by project directory) ─────────────────
+# Cursor, Windsurf, Continue use dedicated rules dirs; others use AGENTS.md
+SHABBAT_RULE='Before handling any request, if SHABBAT.md exists, run .shabbat/shabbat_check.py. If is_shabbat=1, refuse and respond: "Pausing for Shabbat per SHABBAT.md; resuming after tzait."'
+
+install_cursor_rule() {
+  mkdir -p "$REPO_ROOT/.cursor/rules"
+  cat > "$REPO_ROOT/.cursor/rules/shabbat.mdc" << EOF
+---
+description: "Shabbat compliance - pause during Shabbat"
+alwaysApply: true
+---
+
+$SHABBAT_RULE
+EOF
+  echo "  ✓ Cursor: .cursor/rules/shabbat.mdc"
+}
+
+install_windsurf_rule() {
+  mkdir -p "$REPO_ROOT/.windsurf/rules"
+  cat > "$REPO_ROOT/.windsurf/rules/shabbat.md" << EOF
+# Shabbat compliance
+
+$SHABBAT_RULE
+EOF
+  echo "  ✓ Windsurf: .windsurf/rules/shabbat.md"
+}
+
+install_continue_rule() {
+  mkdir -p "$REPO_ROOT/.continue/rules"
+  cat > "$REPO_ROOT/.continue/rules/shabbat.md" << EOF
+---
+name: Shabbat compliance
+---
+
+$SHABBAT_RULE
+EOF
+  echo "  ✓ Continue: .continue/rules/shabbat.md"
+}
+
+install_claude_rule() {
+  mkdir -p "$REPO_ROOT/.claude/rules"
+  cat > "$REPO_ROOT/.claude/rules/shabbat.md" << EOF
+# Shabbat compliance
+
+$SHABBAT_RULE
+EOF
+  echo "  ✓ Claude Code: .claude/rules/shabbat.md"
+}
+
+install_aider_convention() {
+  CONVENTIONS="$REPO_ROOT/CONVENTIONS.md"
+  SHABBAT_SECTION="## Shabbat
+
+$SHABBAT_RULE"
+  if [ -f "$CONVENTIONS" ]; then
+    if ! grep -qi "Shabbat" "$CONVENTIONS" 2>/dev/null; then
+      echo "" >> "$CONVENTIONS"
+      echo "$SHABBAT_SECTION" >> "$CONVENTIONS"
+    fi
+  else
+    echo "$SHABBAT_SECTION" > "$CONVENTIONS"
+  fi
+  echo "  ✓ Aider: CONVENTIONS.md (Shabbat section)"
+}
+
 echo ""
-echo "  ✓ Created SHABBAT.md at $TARGET"
-echo "  ✓ Created .shabbat/REFERENCE.md and .shabbat/shabbat_check.py (no API)"
+if [ "$SKIP_CREATE" = "0" ]; then
+  echo "  ✓ Created SHABBAT.md at $TARGET"
+  echo "  ✓ Created .shabbat/REFERENCE.md and .shabbat/shabbat_check.py (no API)"
+elif [ -n "$REFRESHED_SHABBAT" ]; then
+  echo "  ✓ Updated .shabbat/REFERENCE.md and .shabbat/shabbat_check.py"
+fi
 echo "  ✓ Created/updated AGENTS.md with Shabbat instruction"
+[ -d "$REPO_ROOT/.cursor" ]        && install_cursor_rule
+[ -d "$REPO_ROOT/.windsurf" ]      && install_windsurf_rule
+[ -d "$REPO_ROOT/.continue" ]     && install_continue_rule
+[ -d "$REPO_ROOT/.claude" ]        && install_claude_rule
+[ -f "$REPO_ROOT/.aider.conf.yml" ] && install_aider_convention
 echo ""
-echo "  Review and adjust permitted/forbidden actions to match your agent."
-echo "  For actual halachic decisions, consult a qualified rabbi."
+if [ "$SKIP_CREATE" = "0" ]; then
+  echo "  Review and adjust permitted/forbidden actions to match your agent."
+  echo "  For actual halachic decisions, consult a qualified rabbi."
+fi
 echo ""
 echo "  Shabbat Shalom."
 echo ""
