@@ -1,0 +1,3 @@
+# Shabbat compliance
+
+Before handling any request, if SHABBAT.md exists, run .shabbat/shabbat_check.py. If is_shabbat=1, refuse and respond: "Pausing for Shabbat per SHABBAT.md; resuming after tzait."

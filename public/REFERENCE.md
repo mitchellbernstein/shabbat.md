@@ -63,11 +63,32 @@ Uses NOAA formula for shkia (sunset) and tzait (6° below horizon). Supports all
 
 ## How to enable
 
-SHABBAT.md only takes effect if something tells agents to read it. Use one of these:
+SHABBAT.md only takes effect if something tells agents to read it. The install script auto-detects agents by project directory and installs the right rule:
 
-1. **AGENTS.md** — Add: `Read SHABBAT.md and honor its Shabbat compliance settings.` (The install script does this if you don't have AGENTS.md.)
-2. **Agent/workspace rules** — Add a rule in your coding agent's config (e.g. Cursor rules, workspace settings) that instructs it to check SHABBAT.md before running. Works for any agent that reads project rules.
+| Agent | Detection | Rule location |
+|-------|-----------|---------------|
+| Cursor | `.cursor/` exists | `.cursor/rules/shabbat.mdc` |
+| Windsurf | `.windsurf/` exists | `.windsurf/rules/shabbat.md` |
+| Continue | `.continue/` exists | `.continue/rules/shabbat.md` |
+| Claude Code | `.claude/` exists | `.claude/rules/shabbat.md` |
+| Aider | `.aider.conf.yml` exists | `CONVENTIONS.md` (Shabbat section) |
+| Factory, Codex, OpenCode, Pi, Zed | (use AGENTS.md) | `AGENTS.md` |
+
+Manual options:
+
+1. **AGENTS.md** — Add: `Read SHABBAT.md and honor its Shabbat compliance settings.` (The install script does this.)
+2. **Agent/workspace rules** — Add a rule in your coding agent's config that instructs it to check SHABBAT.md before running.
 3. **Native support** — Some agents may add built-in SHABBAT.md support. When available, no setup needed.
+
+## Updates
+
+**To update:** Re-run the install script. Your `SHABBAT.md` (timezone, observance, etc.) is never overwritten; only `.shabbat/shabbat_check.py`, `REFERENCE.md`, and agent rules are refreshed.
+
+```bash
+curl -fsSL shabbatmd.com/install | bash
+```
+
+**To know when updates exist:** Watch the [GitHub repo](https://github.com/mitchellbernstein/shabbat.md) or re-run the install periodically. There is no automatic update check.
 
 ## Full spec
 
