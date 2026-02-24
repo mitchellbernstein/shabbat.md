@@ -24,14 +24,23 @@ echo "  Setting up SHABBAT.md"
 echo "  ─────────────────────────────────────"
 echo ""
 
+# Read from terminal when stdin is a pipe (e.g. curl | bash)
+read_input() {
+  if [ -t 0 ]; then
+    read -r "$@"
+  else
+    read -r "$@" < /dev/tty 2>/dev/null || true
+  fi
+}
+
 # ── Question 1: Timezone ──────────────────────────────────────────────
 echo "  Timezone detected: $TIMEZONE"
 printf "  Is this correct? [Y/n] "
-read TZ_CONFIRM
+read_input TZ_CONFIRM
 TZ_CONFIRM=${TZ_CONFIRM:-Y}
 if [[ "$TZ_CONFIRM" =~ ^[Nn] ]]; then
   printf "  Enter timezone (e.g. America/New_York): "
-  read TIMEZONE
+  read_input TIMEZONE
 fi
 
 echo ""
@@ -41,7 +50,7 @@ echo "  Agent identity:"
 echo "    1) service-account  — agent has its own credentials (recommended)"
 echo "    2) user-proxy       — agent acts as you (stricter restrictions apply)"
 printf "  Choose [1/2, default 1]: "
-read IDENTITY_CHOICE
+read_input IDENTITY_CHOICE
 IDENTITY_CHOICE=${IDENTITY_CHOICE:-1}
 if [ "$IDENTITY_CHOICE" = "2" ]; then
   IDENTITY_TYPE="user-proxy"
@@ -56,7 +65,7 @@ echo "  Observance:"
 echo "    1) strict   — full restrictions, candle-lighting to havdalah, safest defaults"
 echo "    2) relaxed  — shkia to tzait, read/monitor/search permitted, lighter fence"
 printf "  Choose [1/2, default 1]: "
-read OBS_CHOICE
+read_input OBS_CHOICE
 OBS_CHOICE=${OBS_CHOICE:-1}
 
 if [ "$OBS_CHOICE" = "2" ]; then
@@ -93,10 +102,10 @@ cat > "$TARGET" << EOF
 - observe_yom_tov: $YOM_TOV
 
 ## Permitted Actions
-$(printf "$PERMITTED_BLOCK" | tr '\n' '\n')
+$(printf '%b' "$PERMITTED_BLOCK")
 
 ## Forbidden Actions
-$(printf "$FORBIDDEN_BLOCK" | tr '\n' '\n')
+$(printf '%b' "$FORBIDDEN_BLOCK")
 
 ## Human-in-the-Loop
 - pause_hitl_on_shabbat: true
