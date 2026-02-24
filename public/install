@@ -3,10 +3,13 @@ set -e
 
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 TARGET="$REPO_ROOT/SHABBAT.md"
+AGENTS_FILE="$REPO_ROOT/AGENTS.md"
+SHABBAT_DIR="$REPO_ROOT/.shabbat"
 
 if [ -f "$TARGET" ]; then
   echo ""
   echo "SHABBAT.md already exists at $TARGET"
+  echo "To enable for agents, add to AGENTS.md: Read SHABBAT.md and honor its Shabbat compliance settings."
   exit 0
 fi
 
@@ -84,9 +87,21 @@ else
   FORBIDDEN_BLOCK="- write\n- deploy\n- delete\n- communicate\n- transact\n- commit"
 fi
 
-# ── Write file ────────────────────────────────────────────────────────
+# ── Write SHABBAT.md ──────────────────────────────────────────────────
 cat > "$TARGET" << EOF
 # SHABBAT.md
+
+Compliance config for AI agents during Shabbat and Yom Tov. Declares when to pause,
+what is permitted, and what is forbidden.
+
+**For agents:** Read this file and .shabbat/REFERENCE.md. Before running, execute
+.shabbat/shabbat_check.py — it computes shkia/tzait locally (no API). If is_shabbat=1,
+pause and refuse new work. Restrict actions to Permitted; avoid Forbidden. If
+life_safety_override is true, all rules are suspended.
+
+**How to enable:** Add to AGENTS.md: "Read SHABBAT.md and honor its Shabbat compliance
+settings." Or add an agent/workspace rule to check SHABBAT.md. See .shabbat/REFERENCE.md
+for full options.
 
 ## Agent Identity
 - identity_type: $IDENTITY_TYPE
@@ -118,8 +133,114 @@ $(printf '%b' "$FORBIDDEN_BLOCK")
 - format: activity-log
 EOF
 
+# ── Write .shabbat/ ────────────────────────────────────────────────────
+mkdir -p "$SHABBAT_DIR"
+curl -sSL https://shabbatmd.com/REFERENCE.md -o "$SHABBAT_DIR/REFERENCE.md" 2>/dev/null || true
+curl -sSL https://shabbatmd.com/shabbat_check.py -o "$SHABBAT_DIR/shabbat_check.py" 2>/dev/null || \
+  curl -sSL https://raw.githubusercontent.com/mitchellbernstein/shabbat.md/main/public/shabbat_check.py -o "$SHABBAT_DIR/shabbat_check.py" 2>/dev/null || true
+[ -s "$SHABBAT_DIR/shabbat_check.py" ] && chmod +x "$SHABBAT_DIR/shabbat_check.py"
+if [ ! -s "$SHABBAT_DIR/REFERENCE.md" ]; then
+  cat > "$SHABBAT_DIR/REFERENCE.md" << 'REFEOF'
+# SHABBAT.md Reference
+
+Context for AI agents: what each field means and how to interpret SHABBAT.md.
+
+## What is SHABBAT.md?
+
+A compliance config for AI agents during Shabbat and Yom Tov. It declares when the agent must pause, what it may do if it runs, and what is forbidden. Agents read SHABBAT.md and issue a verdict (MUTAR / SAFEK / ASUR) before the pause window.
+
+## Key Fields
+
+### identity_type
+- **service-account** — Agent has its own credentials and identity. Different halachic category (amirah l'akum may apply). Recommended for autonomous agents.
+- **user-proxy** — Agent acts as you. Subject to the same restrictions. Stricter.
+
+### observance
+- **strict** — candle-lighting → havdalah, communicate forbidden, Yom Tov observed.
+- **relaxed** — shkia → tzait, communicate permitted, lighter fence overall.
+
+### pause_trigger / resume_trigger
+- **shkia** — Halachic sunset; precise start of Shabbat. Computed from zmanim for your timezone.
+- **candle-lighting** — Typically ~18 min before shkia; traditional fence. strict mode default.
+- **tzait** — Nightfall; when Shabbat ends (3 stars). relaxed mode default for resume.
+- **havdalah** — End of Shabbat ceremony time. strict mode default for resume.
+- Or an ISO 8601 time.
+
+### permitted / forbidden actions
+
+| Action       | Compute equivalent                          | Halachic note        |
+|-------------|----------------------------------------------|----------------------|
+| read        | Queries, browsing, fetching                  | Generally MUTAR      |
+| summarize   | Synthesis of existing data                   | MUTAR                |
+| monitor     | Watch and log, no alerting                  | MUTAR                |
+| search      | Search, filter, rank                        | SAFEK (Borer)        |
+| analyze     | Analysis of data                            | MUTAR                |
+| write       | Disk, DB, external systems                   | ASUR (Kotev)         |
+| deploy      | Infra, releases                             | ASUR (Boneh)         |
+| delete      | Files, records, rm                          | ASUR (Mochek)        |
+| communicate | Email, Slack, SMS as user                    | ASUR (strict)        |
+| transact    | Billing, payments                           | ASUR (Mekach u'memkar) |
+| commit      | Git commits                                 | ASUR (Kotev)         |
+
+### life_safety_override
+- **false** — Normal rules apply.
+- **true** — Pikuach nefesh (saving a life) overrides all of Shabbat. Medical/emergency systems only.
+
+### pause_hitl_on_shabbat
+- **true** — Do not prompt the user for input during Shabbat. Pause any human-in-the-loop checkpoint.
+
+## Checking if it is Shabbat (no API)
+
+Run .shabbat/shabbat_check.py — pure Python, stdlib only. No network. Outputs:
+- is_shabbat=1 — currently Shabbat; pause
+- is_shabbat=0 — not Shabbat; proceed
+- Exit code 2 when Shabbat, 0 otherwise
+
+Uses NOAA formula for shkia (sunset) and tzait (6 deg below horizon). Supports all IANA timezones. For accuracy, add latitude and longitude to SHABBAT.md.
+
+## Verdicts
+
+- **MUTAR** — Permitted. Agent may run through Shabbat. (Own identity, pre-prompted, no HITL, scope within permitted.)
+- **SAFEK** — Uncertain. Restrict scope. Consult a posek.
+- **ASUR** — Forbidden. Pause the agent before shkia on Friday.
+
+## How to enable
+
+SHABBAT.md only takes effect if something tells agents to read it. Use one of these:
+
+1. **AGENTS.md** — Add: `Read SHABBAT.md and honor its Shabbat compliance settings.` (The install script does this if you do not have AGENTS.md.)
+2. **Agent/workspace rules** — Add a rule in your coding agent config (e.g. Cursor rules, workspace settings) that instructs it to check SHABBAT.md before running. Works for any agent that reads project rules.
+3. **Native support** — Some agents may add built-in SHABBAT.md support. When available, no setup needed.
+
+## Full spec
+
+https://shabbatmd.com
+REFEOF
+fi
+
+# ── Create or update AGENTS.md ────────────────────────────────────────
+SHABBAT_LINE="Read SHABBAT.md and honor its Shabbat compliance settings."
+if [ -f "$AGENTS_FILE" ]; then
+  if ! grep -qi "SHABBAT" "$AGENTS_FILE" 2>/dev/null; then
+    echo "" >> "$AGENTS_FILE"
+    echo "## Shabbat" >> "$AGENTS_FILE"
+    echo "$SHABBAT_LINE" >> "$AGENTS_FILE"
+  fi
+else
+  cat > "$AGENTS_FILE" << AGENTSEOF
+# AGENTS.md
+
+Project conventions and instructions for AI coding agents.
+
+## Shabbat
+$SHABBAT_LINE
+AGENTSEOF
+fi
+
 echo ""
 echo "  ✓ Created SHABBAT.md at $TARGET"
+echo "  ✓ Created .shabbat/REFERENCE.md and .shabbat/shabbat_check.py (no API)"
+echo "  ✓ Created/updated AGENTS.md with Shabbat instruction"
 echo ""
 echo "  Review and adjust permitted/forbidden actions to match your agent."
 echo "  For actual halachic decisions, consult a qualified rabbi."
